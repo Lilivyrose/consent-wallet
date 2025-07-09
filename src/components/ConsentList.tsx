@@ -31,7 +31,7 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'active':
-        return <CheckCircle className="h-5 w-5 text-green-400" />;
+        return <CheckCircle className="h-5 w-5 text-orange-400" />;
       case 'expired':
         return <Clock className="h-5 w-5 text-yellow-400" />;
       case 'revoked':
@@ -44,7 +44,7 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active':
-        return 'text-green-400 bg-green-400 bg-opacity-20';
+        return 'text-orange-400 bg-orange-400 bg-opacity-20';
       case 'expired':
         return 'text-yellow-400 bg-yellow-400 bg-opacity-20';
       case 'revoked':
@@ -55,6 +55,9 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
   };
 
   const handleRevoke = async (tokenId: number) => {
+    // Prevent default form submission behavior
+    event?.preventDefault();
+    
     if (!wallet.isConnected || !wallet.isCorrectNetwork) {
       alert('Please connect to BNB Smart Chain Testnet');
       return;
@@ -75,19 +78,26 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
     }
   };
 
+  const handleRefresh = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onRefresh) {
+      await onRefresh();
+    }
+  };
   if (consents.length === 0) {
     return (
       <div className="text-center py-16 space-y-6">
         <div className="space-y-4">
           <Shield className="h-16 w-16 text-gray-400 mx-auto" />
-          <h3 className="text-2xl font-semibold text-gray-300">No Consent Tokens Yet</h3>
+          <h3 className="text-2xl font-semibold text-orange-200">No Consent Tokens Yet</h3>
           <p className="text-gray-400">Issue your first consent token to get started</p>
         </div>
         {onRefresh && (
           <button
-            onClick={onRefresh}
+            type="button"
+            onClick={handleRefresh}
             disabled={loading}
-            className="flex items-center space-x-2 px-6 py-3 bg-cyan-500 bg-opacity-20 text-cyan-400 rounded-lg hover:bg-cyan-500 hover:text-white transition-all duration-200 mx-auto disabled:opacity-50"
+            className="flex items-center space-x-2 px-6 py-3 bg-orange-500 bg-opacity-20 text-orange-400 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-200 mx-auto disabled:opacity-50 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
           >
             <RefreshCw className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -100,14 +110,15 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
           Your Consent Tokens
         </h2>
         {onRefresh && (
           <button
-            onClick={onRefresh}
+            type="button"
+            onClick={handleRefresh}
             disabled={loading}
-            className="flex items-center space-x-2 px-4 py-2 bg-cyan-500 bg-opacity-20 text-cyan-400 rounded-lg hover:bg-cyan-500 hover:text-white transition-all duration-200 disabled:opacity-50"
+            className="flex items-center space-x-2 px-4 py-2 bg-orange-500 bg-opacity-20 text-orange-400 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-200 disabled:opacity-50 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/40"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
@@ -123,11 +134,11 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
           return (
             <div
               key={consent.tokenId}
-              className="backdrop-blur-md bg-white bg-opacity-10 rounded-xl p-6 border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-200"
+              className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-orange-500 border-opacity-20 hover:bg-opacity-10 transition-all duration-200 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <Shield className="h-6 w-6 text-cyan-400" />
+                  <Shield className="h-6 w-6 text-orange-400" />
                   <span className="text-lg font-semibold">Token #{consent.tokenId}</span>
                 </div>
                 <div className={`flex items-center space-x-2 px-3 py-1 rounded-full ${statusColor}`}>
@@ -139,8 +150,8 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
               <div className="space-y-3">
                 <div className="flex items-center space-x-2 text-sm">
                   <User className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-300">Recipient:</span>
-                  <span className="font-mono text-cyan-400">
+                  <span className="text-orange-200">Recipient:</span>
+                  <span className="font-mono text-orange-400">
                     {formatAddress(consent.recipient)}
                   </span>
                 </div>
@@ -148,7 +159,7 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                 <div className="flex items-start space-x-2 text-sm">
                   <FileText className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
-                    <span className="text-gray-300">Purpose:</span>
+                    <span className="text-orange-200">Purpose:</span>
                     <p className="text-white mt-1 leading-relaxed">
                       {consent.purpose}
                     </p>
@@ -157,7 +168,7 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
 
                 <div className="flex items-center space-x-2 text-sm">
                   <Calendar className="h-4 w-4 text-gray-400" />
-                  <span className="text-gray-300">Expires:</span>
+                  <span className="text-orange-200">Expires:</span>
                   <span className="text-white">
                     {formatDate(consent.expiryDate)}
                   </span>
@@ -166,12 +177,13 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
 
               {status === 'active' && (
                 <button
+                  type="button"
                   onClick={() => handleRevoke(consent.tokenId)}
                   disabled={loading || revokingTokens.has(consent.tokenId) || !wallet.isCorrectNetwork}
-                  className={`w-full mt-6 flex items-center justify-center space-x-2 px-4 py-3 bg-red-500 bg-opacity-20 text-red-400 rounded-lg transition-all duration-200 ${
+                  className={`w-full mt-6 flex items-center justify-center space-x-2 px-4 py-3 bg-red-500 bg-opacity-20 text-red-400 rounded-lg transition-all duration-200 shadow-lg shadow-red-500/20 ${
                     loading || revokingTokens.has(consent.tokenId) || !wallet.isCorrectNetwork
                       ? 'opacity-50 cursor-not-allowed'
-                      : 'hover:bg-red-500 hover:text-white'
+                      : 'hover:bg-red-500 hover:text-white hover:shadow-red-500/40'
                   }`}
                 >
                   {revokingTokens.has(consent.tokenId) ? (

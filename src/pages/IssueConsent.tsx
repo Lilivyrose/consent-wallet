@@ -15,33 +15,33 @@ export const IssueConsent: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
           Issue New Consent Token
         </h1>
-        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+        <p className="text-xl text-orange-100 max-w-2xl mx-auto">
           Create a new consent token on the blockchain with your specified terms and conditions
         </p>
       </div>
 
       <ConsentForm onSubmit={mintConsent} loading={loading} />
 
-      <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-white border-opacity-10">
-        <h3 className="text-2xl font-semibold mb-4 text-cyan-400">Important Notes</h3>
-        <ul className="space-y-3 text-gray-300">
+      <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
+        <h3 className="text-2xl font-semibold mb-4 text-orange-400">Important Notes</h3>
+        <ul className="space-y-3 text-orange-100">
           <li className="flex items-start space-x-2">
-            <span className="text-cyan-400 mt-1">•</span>
+            <span className="text-orange-400 mt-1">•</span>
             <span>Consent tokens are immutable once created on the blockchain</span>
           </li>
           <li className="flex items-start space-x-2">
-            <span className="text-cyan-400 mt-1">•</span>
+            <span className="text-orange-400 mt-1">•</span>
             <span>You can revoke consent at any time before expiration</span>
           </li>
           <li className="flex items-start space-x-2">
-            <span className="text-cyan-400 mt-1">•</span>
+            <span className="text-orange-400 mt-1">•</span>
             <span>All transactions require a small BNB fee for gas</span>
           </li>
           <li className="flex items-start space-x-2">
-            <span className="text-cyan-400 mt-1">•</span>
+            <span className="text-orange-400 mt-1">•</span>
             <span>Recipient addresses must be valid Ethereum addresses</span>
           </li>
         </ul>

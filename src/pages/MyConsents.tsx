@@ -19,35 +19,34 @@ export const MyConsents: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+        <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
           My Consent Tokens
         </h1>
-        <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+        <p className="text-xl text-orange-100 max-w-2xl mx-auto">
           Manage all your issued consent tokens in one place
         </p>
       </div>
 
       {/* Statistics */}
       <div className="grid md:grid-cols-4 gap-6">
-        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
-          <div className="text-3xl font-bold text-cyan-400">{consents.length}</div>
-          <div className="text-gray-300">Total Tokens</div>
+        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
+          <div className="text-3xl font-bold text-orange-400">{consents.length}</div>
+          <div className="text-orange-200">Total Tokens</div>
         </div>
-        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
-          <div className="text-3xl font-bold text-green-400">{activeConsents.length}</div>
-          <div className="text-gray-300">Active</div>
+        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
+          <div className="text-3xl font-bold text-orange-400">{activeConsents.length}</div>
+          <div className="text-orange-200">Active</div>
         </div>
-        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
           <div className="text-3xl font-bold text-yellow-400">{expiredConsents.length}</div>
-          <div className="text-gray-300">Expired</div>
+          <div className="text-orange-200">Expired</div>
         </div>
-        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+        <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-xl p-6 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
           <div className="text-3xl font-bold text-red-400">{revokedConsents.length}</div>
-          <div className="text-gray-300">Revoked</div>
+          <div className="text-orange-200">Revoked</div>
         </div>
       </div>
 
-      <ConsentList consents={consents} onRevoke={revokeConsent} loading={loading} />
       <ConsentList 
         consents={consents} 
         onRevoke={revokeConsent} 

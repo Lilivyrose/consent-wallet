@@ -67,11 +67,11 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
   return (
     <div className="max-w-2xl mx-auto">
       {success && (
-        <div className="mb-6 flex items-center space-x-3 p-4 bg-green-500 bg-opacity-20 border border-green-500 border-opacity-30 rounded-lg">
-          <CheckCircle className="h-6 w-6 text-green-400" />
+        <div className="mb-6 flex items-center space-x-3 p-4 bg-orange-500 bg-opacity-20 border border-orange-500 border-opacity-30 rounded-lg shadow-lg shadow-orange-500/20">
+          <CheckCircle className="h-6 w-6 text-orange-400" />
           <div>
-            <p className="text-green-400 font-semibold">Consent Token Issued Successfully!</p>
-            <p className="text-green-300 text-sm">Your consent token has been minted on the blockchain.</p>
+            <p className="text-orange-400 font-semibold">Consent Token Issued Successfully!</p>
+            <p className="text-orange-300 text-sm">Your consent token has been minted on the blockchain.</p>
           </div>
         </div>
       )}
@@ -86,14 +86,14 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
         </div>
       )}
 
-      <div className="backdrop-blur-md bg-white bg-opacity-10 rounded-2xl p-8 border border-white border-opacity-20">
-        <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+      <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-20 shadow-2xl shadow-orange-500/10">
+        <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
           Issue New Consent Token
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300 mb-2">
+            <label className="flex items-center space-x-2 text-sm font-medium text-orange-200 mb-2">
               <User className="h-4 w-4" />
               <span>Recipient Wallet Address</span>
             </label>
@@ -103,7 +103,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
               value={formData.recipient}
               onChange={handleChange}
               placeholder="0x..."
-              className="w-full px-4 py-3 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg border border-orange-500 border-opacity-30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-200 shadow-inner"
             />
             {errors.recipient && (
               <p className="text-red-400 text-sm mt-1">{errors.recipient}</p>
@@ -111,7 +111,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
           </div>
 
           <div>
-            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300 mb-2">
+            <label className="flex items-center space-x-2 text-sm font-medium text-orange-200 mb-2">
               <FileText className="h-4 w-4" />
               <span>Purpose of Consent</span>
             </label>
@@ -121,7 +121,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
               onChange={handleChange}
               placeholder="Describe the purpose of this consent..."
               rows={4}
-              className="w-full px-4 py-3 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200 resize-none"
+              className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg border border-orange-500 border-opacity-30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-200 resize-none shadow-inner"
             />
             {errors.purpose && (
               <p className="text-red-400 text-sm mt-1">{errors.purpose}</p>
@@ -129,7 +129,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
           </div>
 
           <div>
-            <label className="flex items-center space-x-2 text-sm font-medium text-gray-300 mb-2">
+            <label className="flex items-center space-x-2 text-sm font-medium text-orange-200 mb-2">
               <Calendar className="h-4 w-4" />
               <span>Expiry Date</span>
             </label>
@@ -138,7 +138,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
               name="expiryDate"
               value={formData.expiryDate}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-white bg-opacity-10 rounded-lg border border-white border-opacity-20 text-white focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all duration-200"
+              className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg border border-orange-500 border-opacity-30 text-white focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-200 shadow-inner"
             />
             {errors.expiryDate && (
               <p className="text-red-400 text-sm mt-1">{errors.expiryDate}</p>
@@ -148,10 +148,10 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
           <button
             type="submit"
             disabled={loading || !wallet.isConnected || !wallet.isCorrectNetwork}
-            className={`w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-cyan-400 to-green-400 rounded-lg font-semibold text-black transition-all duration-200 transform ${
+            className={`w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg font-semibold text-black transition-all duration-200 transform shadow-lg shadow-orange-500/30 ${
               loading || !wallet.isConnected || !wallet.isCorrectNetwork
                 ? 'opacity-50 cursor-not-allowed'
-                : 'hover:from-cyan-300 hover:to-green-300 hover:scale-105'
+                : 'hover:from-orange-400 hover:to-yellow-400 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/40'
             }`}
           >
             {loading ? (

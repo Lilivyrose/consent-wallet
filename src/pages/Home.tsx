@@ -42,11 +42,11 @@ export const Home: React.FC = () => {
       <section className="text-center space-y-8 py-20">
         <div className="space-y-6">
           <h1 className="text-6xl md:text-7xl font-bold leading-tight">
-            <span className="bg-gradient-to-r from-cyan-400 via-green-400 to-blue-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-orange-400 via-yellow-400 to-orange-500 bg-clip-text text-transparent">
               Consent Wallet
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-orange-100 max-w-4xl mx-auto leading-relaxed">
             The future of digital consent management on the blockchain. Issue, manage, and revoke consent tokens with complete transparency and control.
           </p>
         </div>
@@ -56,14 +56,14 @@ export const Home: React.FC = () => {
             <>
               <Link
                 to="/issue"
-                className="flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-cyan-400 to-green-400 rounded-xl font-semibold text-black hover:from-cyan-300 hover:to-green-300 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl font-semibold text-black hover:from-orange-400 hover:to-yellow-400 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40"
               >
                 <Plus className="h-6 w-6" />
                 <span>Issue Consent Token</span>
               </Link>
               <Link
                 to="/my-consents"
-                className="flex items-center space-x-3 px-8 py-4 backdrop-blur-md bg-white bg-opacity-10 rounded-xl font-semibold border border-white border-opacity-20 hover:bg-opacity-20 transition-all duration-300 transform hover:scale-105"
+                className="flex items-center space-x-3 px-8 py-4 backdrop-blur-md bg-white bg-opacity-5 rounded-xl font-semibold border border-orange-500 border-opacity-20 hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30"
               >
                 <FileText className="h-6 w-6" />
                 <span>View My Consents</span>
@@ -72,7 +72,7 @@ export const Home: React.FC = () => {
           ) : (
             <div className="text-center space-y-4">
               <p className="text-gray-400">Connect your wallet to get started</p>
-              <div className="flex items-center justify-center space-x-2 text-cyan-400">
+              <div className="flex items-center justify-center space-x-2 text-orange-400">
                 <ArrowRight className="h-5 w-5" />
                 <span>Look for the "Connect Wallet" button in the top right</span>
               </div>
@@ -84,10 +84,10 @@ export const Home: React.FC = () => {
       {/* Features Section */}
       <section className="space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
             Why Choose Consent Wallet?
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-orange-100 max-w-3xl mx-auto">
             Built on the BNB Smart Chain for fast, secure, and cost-effective consent management
           </p>
         </div>
@@ -98,14 +98,14 @@ export const Home: React.FC = () => {
             return (
               <div
                 key={index}
-                className="group backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105"
+                className="group backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-10 hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20"
               >
                 <div className="space-y-4">
-                  <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-cyan-400 to-green-400 rounded-xl mx-auto group-hover:scale-110 transition-transform duration-300">
+                  <div className="flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-xl mx-auto group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-orange-500/30">
                     <Icon className="h-8 w-8 text-black" />
                   </div>
                   <h3 className="text-xl font-semibold text-center">{feature.title}</h3>
-                  <p className="text-gray-300 text-center leading-relaxed">{feature.description}</p>
+                  <p className="text-orange-100 text-center leading-relaxed">{feature.description}</p>
                 </div>
               </div>
             );
@@ -114,14 +114,14 @@ export const Home: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="backdrop-blur-md bg-white bg-opacity-5 rounded-3xl p-12 border border-white border-opacity-10">
+      <section className="backdrop-blur-md bg-white bg-opacity-5 rounded-3xl p-12 border border-orange-500 border-opacity-10 shadow-2xl shadow-orange-500/10">
         <div className="grid md:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <div key={index} className="text-center space-y-2">
-              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+              <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
                 {stat.value}
               </div>
-              <div className="text-gray-300 font-medium">{stat.label}</div>
+              <div className="text-orange-200 font-medium">{stat.label}</div>
             </div>
           ))}
         </div>
@@ -130,10 +130,10 @@ export const Home: React.FC = () => {
       {/* How It Works Section */}
       <section className="space-y-16">
         <div className="text-center space-y-4">
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
             How It Works
           </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+          <p className="text-xl text-orange-100 max-w-3xl mx-auto">
             Simple, secure, and transparent consent management in three steps
           </p>
         </div>
@@ -157,18 +157,18 @@ export const Home: React.FC = () => {
             }
           ].map((step, index) => (
             <div key={index} className="relative">
-              <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-white border-opacity-10 hover:bg-opacity-10 transition-all duration-300">
+              <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-10 hover:bg-opacity-10 transition-all duration-300 shadow-lg shadow-orange-500/10 hover:shadow-orange-500/20">
                 <div className="space-y-4">
-                  <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+                  <div className="text-4xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
                     {step.step}
                   </div>
                   <h3 className="text-2xl font-semibold">{step.title}</h3>
-                  <p className="text-gray-300 leading-relaxed">{step.description}</p>
+                  <p className="text-orange-100 leading-relaxed">{step.description}</p>
                 </div>
               </div>
               {index < 2 && (
                 <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                  <ArrowRight className="h-8 w-8 text-cyan-400" />
+                  <ArrowRight className="h-8 w-8 text-orange-400" />
                 </div>
               )}
             </div>
@@ -179,16 +179,16 @@ export const Home: React.FC = () => {
       {/* CTA Section */}
       <section className="text-center space-y-8 py-20">
         <div className="space-y-6">
-          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-400 to-green-400 bg-clip-text text-transparent">
+          <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
             Ready to Start?
           </h2>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+          <p className="text-xl text-orange-100 max-w-2xl mx-auto">
             Join thousands of users who trust Consent Wallet for their digital consent management needs.
           </p>
         </div>
 
         {!wallet.isConnected && (
-          <div className="flex items-center justify-center space-x-2 text-cyan-400">
+          <div className="flex items-center justify-center space-x-2 text-orange-400">
             <ArrowRight className="h-5 w-5" />
             <span>Connect your wallet to get started</span>
           </div>
