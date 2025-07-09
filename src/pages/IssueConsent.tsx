@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { ConsentForm } from '../components/ConsentForm';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '../contexts/WalletContext';
 import { useContract } from '../hooks/useContract';
 
 export const IssueConsent: React.FC = () => {

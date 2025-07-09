@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Send, User, FileText, Calendar, CheckCircle, AlertTriangle } from 'lucide-react';
 import { ConsentFormData } from '../types';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '../contexts/WalletContext';
 import { validateConsentForm, formatTransactionError } from '../utils/validation';
 
 interface ConsentFormProps {

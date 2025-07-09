@@ -1,7 +1,7 @@
 import React from 'react';
 import { Shield, User, FileText, Calendar, X, CheckCircle, AlertTriangle, Clock, RefreshCw } from 'lucide-react';
 import { ConsentToken } from '../types';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '../contexts/WalletContext';
 
 interface ConsentListProps {
   consents: ConsentToken[];

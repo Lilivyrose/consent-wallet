@@ -1,6 +1,6 @@
 import React from 'react';
 import { Wallet, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '../contexts/WalletContext';
 
 export const WalletConnect: React.FC = () => {
   const { wallet, connecting, connectWallet, disconnectWallet, switchNetwork } = useWallet();

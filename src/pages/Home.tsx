@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Lock, Users, Zap, Plus, FileText, ArrowRight } from 'lucide-react';
-import { useWallet } from '../hooks/useWallet';
+import { useWallet } from '../contexts/WalletContext';
 
 export const Home: React.FC = () => {
   const { wallet } = useWallet();
