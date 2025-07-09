@@ -10,9 +10,18 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
 
   useEffect(() => {
     if (provider && account) {
-      const signer = provider.getSigner();
-      const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-      setContract(contractInstance);
+      const initializeContract = async () => {
+        try {
+          const signer = await provider.getSigner();
+          const contractInstance = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+          setContract(contractInstance);
+        } catch (error) {
+          console.error('Error initializing contract:', error);
+          setContract(null);
+        }
+      };
+      
+      initializeContract();
     }
   }, [provider, account]);
 
