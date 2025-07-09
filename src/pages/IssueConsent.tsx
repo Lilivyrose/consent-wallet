@@ -6,7 +6,7 @@ import { useContract } from '../hooks/useContract';
 
 export const IssueConsent: React.FC = () => {
   const { wallet, provider } = useWallet();
-  const { mintConsent, loading } = useContract(provider, wallet.account);
+  const { mintConsent, loading, contractError } = useContract(provider, wallet.account);
 
   if (!wallet.isConnected) {
     return <Navigate to="/" replace />;
@@ -23,7 +23,7 @@ export const IssueConsent: React.FC = () => {
         </p>
       </div>
 
-      <ConsentForm onSubmit={mintConsent} loading={loading} />
+      <ConsentForm onSubmit={mintConsent} loading={loading} contractError={contractError} />
 
       <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
         <h3 className="text-2xl font-semibold mb-4 text-orange-400">Important Notes</h3>

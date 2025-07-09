@@ -8,9 +8,10 @@ interface ConsentListProps {
   onRevoke: (tokenId: number) => Promise<void>;
   onRefresh?: () => Promise<void>;
   loading: boolean;
+  contractError?: string | null;
 }
 
-export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, onRefresh, loading }) => {
+export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, onRefresh, loading, contractError }) => {
   const { wallet } = useWallet();
   const [revokingTokens, setRevokingTokens] = React.useState<Set<number>>(new Set());
 
@@ -84,6 +85,20 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
       await onRefresh();
     }
   };
+  
+  if (contractError) {
+    return (
+      <div className="text-center py-16 space-y-6">
+        <div className="space-y-4">
+          <AlertTriangle className="h-16 w-16 text-red-400 mx-auto" />
+          <h3 className="text-2xl font-semibold text-red-400">Contract Configuration Error</h3>
+          <p className="text-gray-400 max-w-md mx-auto">{contractError}</p>
+          <p className="text-orange-300 text-sm">Please check your contract address and ABI configuration.</p>
+        </div>
+      </div>
+    );
+  }
+  
   if (consents.length === 0) {
     return (
       <div className="text-center py-16 space-y-6">
@@ -179,9 +194,9 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                 <button
                   type="button"
                   onClick={() => handleRevoke(consent.tokenId)}
-                  disabled={loading || revokingTokens.has(consent.tokenId) || !wallet.isCorrectNetwork}
+                  disabled={loading || revokingTokens.has(consent.tokenId) || !wallet.isCorrectNetwork || !!contractError}
                   className={`w-full mt-6 flex items-center justify-center space-x-2 px-4 py-3 bg-red-500 bg-opacity-20 text-red-400 rounded-lg transition-all duration-200 shadow-lg shadow-red-500/20 ${
-                    loading || revokingTokens.has(consent.tokenId) || !wallet.isCorrectNetwork
+                    loading || revokingTokens.has(consent.tokenId) || !wallet.isCorrectNetwork || !!contractError
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-red-500 hover:text-white hover:shadow-red-500/40'
                   }`}
@@ -192,7 +207,12 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                     <>
                       <X className="h-4 w-4" />
                       <span>
-                        {!wallet.isCorrectNetwork ? 'Switch Network' : 'Revoke Consent'}
+                        {!wallet.isCorrectNetwork 
+                          ? 'Switch Network' 
+                          : contractError 
+                          ? 'Contract Error' 
+                          : 'Revoke Consent'
+                        }
                       </span>
                     </>
                   )}

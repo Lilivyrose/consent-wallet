@@ -1,7 +1,9 @@
-export const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
+// Replace these placeholders with your actual deployed contract details
+export const CONTRACT_ADDRESS = "PASTE_YOUR_CONTRACT_ADDRESS_HERE";
 
+// Replace this with your actual contract ABI from the deployment
 export const CONTRACT_ABI = [
-  // Mint consent function
+  // Example ABI structure - replace with your actual ABI
   {
     "inputs": [
       {"internalType": "address", "name": "recipient", "type": "address"},
@@ -13,7 +15,6 @@ export const CONTRACT_ABI = [
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  // Revoke consent function
   {
     "inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}],
     "name": "revokeConsent",
@@ -21,7 +22,6 @@ export const CONTRACT_ABI = [
     "stateMutability": "nonpayable",
     "type": "function"
   },
-  // Get user's consents function
   {
     "inputs": [{"internalType": "address", "name": "owner", "type": "address"}],
     "name": "getMyConsents",
@@ -42,7 +42,7 @@ export const CONTRACT_ABI = [
     "stateMutability": "view",
     "type": "function"
   },
-  // Events for listening to contract changes
+  // Events for real-time updates
   {
     "anonymous": false,
     "inputs": [
@@ -64,6 +64,7 @@ export const CONTRACT_ABI = [
     "name": "ConsentRevoked",
     "type": "event"
   }
+  // PASTE_YOUR_COMPLETE_ABI_ARRAY_HERE
 ];
 
 export const BNB_TESTNET_CHAIN_ID = 97;
@@ -79,4 +80,19 @@ export const NETWORK_CONFIG = {
     decimals: 18
   },
   blockExplorerUrls: ["https://testnet.bscscan.com/"]
+};
+
+// Contract validation helper
+export const validateContractConfig = () => {
+  if (CONTRACT_ADDRESS === "PASTE_YOUR_CONTRACT_ADDRESS_HERE") {
+    throw new Error("Please update CONTRACT_ADDRESS with your deployed contract address");
+  }
+  
+  if (!CONTRACT_ADDRESS.startsWith("0x") || CONTRACT_ADDRESS.length !== 42) {
+    throw new Error("Invalid contract address format");
+  }
+  
+  if (CONTRACT_ABI.length === 0) {
+    throw new Error("Please update CONTRACT_ABI with your contract's ABI");
+  }
 };

@@ -7,9 +7,10 @@ import { validateConsentForm, formatTransactionError } from '../utils/validation
 interface ConsentFormProps {
   onSubmit: (data: ConsentFormData) => Promise<void>;
   loading: boolean;
+  contractError?: string | null;
 }
 
-export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) => {
+export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, contractError }) => {
   const { wallet } = useWallet();
   const [formData, setFormData] = useState<ConsentFormData>({
     recipient: '',
@@ -86,6 +87,16 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
         </div>
       )}
 
+      {contractError && (
+        <div className="mb-6 flex items-center space-x-3 p-4 bg-red-500 bg-opacity-20 border border-red-500 border-opacity-30 rounded-lg">
+          <AlertTriangle className="h-6 w-6 text-red-400" />
+          <div>
+            <p className="text-red-400 font-semibold">Contract Configuration Error</p>
+            <p className="text-red-300 text-sm">{contractError}</p>
+          </div>
+        </div>
+      )}
+
       <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-20 shadow-2xl shadow-orange-500/10">
         <h2 className="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent">
           Issue New Consent Token
@@ -147,9 +158,9 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
 
           <button
             type="submit"
-            disabled={loading || !wallet.isConnected || !wallet.isCorrectNetwork}
+            disabled={loading || !wallet.isConnected || !wallet.isCorrectNetwork || !!contractError}
             className={`w-full flex items-center justify-center space-x-2 px-6 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-lg font-semibold text-black transition-all duration-200 transform shadow-lg shadow-orange-500/30 ${
-              loading || !wallet.isConnected || !wallet.isCorrectNetwork
+              loading || !wallet.isConnected || !wallet.isCorrectNetwork || !!contractError
                 ? 'opacity-50 cursor-not-allowed'
                 : 'hover:from-orange-400 hover:to-yellow-400 hover:scale-105 hover:shadow-xl hover:shadow-orange-500/40'
             }`}
@@ -162,6 +173,8 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading }) =
                 <span>
                   {!wallet.isConnected 
                     ? 'Connect Wallet First' 
+                    : contractError
+                    ? 'Contract Error'
                     : !wallet.isCorrectNetwork 
                     ? 'Switch to BNB Testnet' 
                     : 'Issue Consent Token'
