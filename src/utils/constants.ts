@@ -34,9 +34,7 @@ export const CONTRACT_ABI = [
           {"internalType": "address", "name": "recipient", "type": "address"},
           {"internalType": "string", "name": "purpose", "type": "string"},
           {"internalType": "uint256", "name": "expiryDate", "type": "uint256"},
-          {"internalType": "bool", "name": "isRevoked", "type": "bool"},
-          {"internalType": "string", "name": "website", "type": "string"},
-          {"internalType": "string", "name": "dataFields", "type": "string"}
+          {"internalType": "bool", "name": "isRevoked", "type": "bool"}
         ],
         "internalType": "struct ConsentToken[]",
         "name": "",
