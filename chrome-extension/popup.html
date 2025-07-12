@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 350px;
+      height: 500px;
+      margin: 0;
+      padding: 0;
+      font-family: 'Space Grotesk', sans-serif;
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+      color: #fefefe;
+    }
+    
+    .header {
+      background: linear-gradient(135deg, #ff6b00, #ffb347);
+      padding: 20px;
+      text-align: center;
+      color: #000;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .content {
+      padding: 20px;
+    }
+    
+    .stat-card {
+      background: rgba(255, 107, 0, 0.1);
+      border: 1px solid rgba(255, 107, 0, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: 600;
+      color: #ff6b00;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #cccccc;
+      margin-top: 4px;
+    }
+    
+    .action-button {
+      width: 100%;
+      background: linear-gradient(135deg, #ff6b00, #ffb347);
+      color: #000;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+    
+    .action-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 107, 0, 0.3);
+    }
+    
+    .secondary-button {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fefefe;
+      border: 1px solid rgba(255, 107, 0, 0.3);
+    }
+    
+    .status-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    
+    .status-active { background: #ff6b00; }
+    .status-expired { background: #ffb347; }
+    .status-revoked { background: #ff4444; }
+    
+    .recent-consent {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      padding: 12px;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    
+    .recent-consent-site {
+      font-weight: 600;
+      color: #ff6b00;
+    }
+    
+    .recent-consent-time {
+      color: #cccccc;
+      font-size: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🛡️ Consent Wallet</h1>
+    <div style="font-size: 12px; opacity: 0.8;">Web3 Privacy Manager</div>
+  </div>
+  
+  <div class="content">
+    <div class="stat-card">
+      <div class="stat-number" id="activeConsents">-</div>
+      <div class="stat-label">Active Consents</div>
+    </div>
+    
+    <button class="action-button" id="openDashboard">
+      📊 Open Dashboard
+    </button>
+    
+    <button class="action-button secondary-button" id="scanCurrentPage">
+      🔍 Scan Current Page
+    </button>
+    
+    <div style="margin-top: 20px;">
+      <h3 style="margin: 0 0 12px 0; font-size: 14px; color: #ff6b00;">Recent Activity</h3>
+      <div id="recentActivity">
+        <div style="text-align: center; color: #cccccc; font-size: 12px; padding: 20px;">
+          No recent activity
+        </div>
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255, 107, 0, 0.2);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <label style="font-size: 12px; color: #cccccc;">Auto-Detection</label>
+        <input type="checkbox" id="autoDetection" checked>
+      </div>
+    </div>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
