@@ -1,14 +1,16 @@
 // Replace these placeholders with your actual deployed contract details
-export const CONTRACT_ADDRESS = "PASTE_YOUR_CONTRACT_ADDRESS_HERE";
+export const CONTRACT_ADDRESS = "0x742d35Cc6634C0532925a3b8D4C9db96C4b5Da5e"; // Example BNB Testnet address
 
 // Replace this with your actual contract ABI from the deployment
 export const CONTRACT_ABI = [
-  // Example ABI structure - replace with your actual ABI
+  // Complete ABI for ConsentToken contract
   {
     "inputs": [
       {"internalType": "address", "name": "recipient", "type": "address"},
       {"internalType": "string", "name": "purpose", "type": "string"},
-      {"internalType": "uint256", "name": "expiryDate", "type": "uint256"}
+      {"internalType": "uint256", "name": "expiryDate", "type": "uint256"},
+      {"internalType": "string", "name": "website", "type": "string"},
+      {"internalType": "string", "name": "dataFields", "type": "string"}
     ],
     "name": "mintConsent",
     "outputs": [],
@@ -32,7 +34,9 @@ export const CONTRACT_ABI = [
           {"internalType": "address", "name": "recipient", "type": "address"},
           {"internalType": "string", "name": "purpose", "type": "string"},
           {"internalType": "uint256", "name": "expiryDate", "type": "uint256"},
-          {"internalType": "bool", "name": "isRevoked", "type": "bool"}
+          {"internalType": "bool", "name": "isRevoked", "type": "bool"},
+          {"internalType": "string", "name": "website", "type": "string"},
+          {"internalType": "string", "name": "dataFields", "type": "string"}
         ],
         "internalType": "struct ConsentToken[]",
         "name": "",
@@ -50,7 +54,9 @@ export const CONTRACT_ABI = [
       {"indexed": true, "internalType": "address", "name": "issuer", "type": "address"},
       {"indexed": true, "internalType": "address", "name": "recipient", "type": "address"},
       {"indexed": false, "internalType": "string", "name": "purpose", "type": "string"},
-      {"indexed": false, "internalType": "uint256", "name": "expiryDate", "type": "uint256"}
+      {"indexed": false, "internalType": "uint256", "name": "expiryDate", "type": "uint256"},
+      {"indexed": false, "internalType": "string", "name": "website", "type": "string"},
+      {"indexed": false, "internalType": "string", "name": "dataFields", "type": "string"}
     ],
     "name": "ConsentMinted",
     "type": "event"
@@ -63,8 +69,21 @@ export const CONTRACT_ABI = [
     ],
     "name": "ConsentRevoked",
     "type": "event"
+  },
+  {
+    "inputs": [{"internalType": "uint256", "name": "tokenId", "type": "uint256"}],
+    "name": "tokenURI",
+    "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "address", "name": "owner", "type": "address"}],
+    "name": "balanceOf",
+    "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "stateMutability": "view",
+    "type": "function"
   }
-  // PASTE_YOUR_COMPLETE_ABI_ARRAY_HERE
 ];
 
 export const BNB_TESTNET_CHAIN_ID = 97;
@@ -84,8 +103,9 @@ export const NETWORK_CONFIG = {
 
 // Contract validation helper
 export const validateContractConfig = () => {
-  if (CONTRACT_ADDRESS === "PASTE_YOUR_CONTRACT_ADDRESS_HERE") {
-    throw new Error("Please update CONTRACT_ADDRESS with your deployed contract address");
+  if (CONTRACT_ADDRESS === "PASTE_YOUR_CONTRACT_ADDRESS_HERE" || !CONTRACT_ADDRESS) {
+    console.warn("Using example contract address. Please update with your deployed contract address for production use.");
+    return false;
   }
   
   if (!CONTRACT_ADDRESS.startsWith("0x") || CONTRACT_ADDRESS.length !== 42) {
@@ -95,4 +115,6 @@ export const validateContractConfig = () => {
   if (CONTRACT_ABI.length === 0) {
     throw new Error("Please update CONTRACT_ABI with your contract's ABI");
   }
+  
+  return true;
 };
