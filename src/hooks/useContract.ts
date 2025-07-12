@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, CONTRACT_ABI, validateContractConfig } from '../utils/constants';
+import { normalizeAddress } from '../utils/addressUtils';
 import { ConsentToken, ConsentFormData } from '../types';
 
 export const useContract = (provider: ethers.BrowserProvider | null, account: string | null) => {
@@ -104,7 +105,8 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     try {
       console.log('📊 Fetching consents for account:', account);
       
-      const result = await contract.getMyConsents(account);
+      const normalizedAccount = normalizeAddress(account);
+      const result = await contract.getMyConsents(normalizedAccount);
       console.log('📋 Raw contract response:', result);
       
       const formattedConsents: ConsentToken[] = result.map((consent: any) => ({
