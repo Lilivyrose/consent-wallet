@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, CONTRACT_ABI, validateContractConfig } from '../utils/constants';
 import { normalizeAddress } from '../utils/addressUtils';
@@ -94,7 +94,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     }
   };
 
-  const fetchConsents = async () => {
+  const fetchConsents = useCallback(async () => {
     if (!contract || !account) return;
     if (contractError) {
       console.error('Cannot fetch consents due to contract error:', contractError);
@@ -104,6 +104,12 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     setLoading(true);
     try {
       console.log('📊 Fetching consents for account:', account);
+      
+      // First check if the contract exists and has the expected function
+      const code = await contract.runner?.provider?.getCode(CONTRACT_ADDRESS);
+      if (!code || code === '0x') {
+        throw new Error('Contract not found at the specified address. Please verify the contract is deployed on BNB Smart Chain Testnet.');
+      }
       
       const normalizedAccount = normalizeAddress(account);
       const result = await contract.getMyConsents(normalizedAccount);
@@ -119,13 +125,23 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       
       console.log('✨ Formatted consents:', formattedConsents);
       setConsents(formattedConsents);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching consents:', error);
-      // Don't throw here to avoid breaking the UI
+      
+      // Provide specific error messages based on error type
+      if (error.code === 'BAD_DATA' || error.message.includes('could not decode result data')) {
+        setContractError('Contract ABI mismatch or contract not properly deployed. Please check CONTRACT_SETUP_INSTRUCTIONS.md for proper configuration.');
+      } else if (error.message.includes('Contract not found')) {
+        setContractError(error.message);
+      } else if (error.code === 'CALL_EXCEPTION') {
+        setContractError('Contract function call failed. The contract may not be deployed or the function signature may be incorrect.');
+      } else {
+        setContractError(error.message || 'Failed to fetch consents');
+      }
     } finally {
       setLoading(false);
     }
-  };
+  }, [contract, account, contractError]);
 
   useEffect(() => {
     if (contract && account) {
