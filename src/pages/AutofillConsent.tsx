@@ -15,7 +15,8 @@ export default function ShareData() {
     fields: [],
     expiryDate: '',
     privacyUrl: '',
-    sourceUrl: ''
+    sourceUrl: '',
+    siteName: ''
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +32,7 @@ export default function ShareData() {
     const privacyUrl = searchParams.get('privacyUrl');
     const sourceUrl = searchParams.get('sourceUrl');
 
+    console.log('AutofillConsent URL params:', { to, site, serviceName, purpose, fields, privacyUrl, sourceUrl });
     if (to) {
       setFormData(prev => ({ ...prev, recipient: normalizeAddress(to) }));
     }
@@ -40,12 +42,9 @@ export default function ShareData() {
     }
     
     if (fields) {
-      try {
-        const parsedFields = JSON.parse(decodeURIComponent(fields));
-        setFormData(prev => ({ ...prev, fields: parsedFields }));
-      } catch (e) {
-        console.error('Failed to parse fields:', e);
-      }
+      // Parse comma-separated fields
+      const parsedFields = fields.split(',').map(field => field.trim()).filter(Boolean);
+      setFormData(prev => ({ ...prev, fields: parsedFields }));
     }
     
     if (privacyUrl) {
@@ -54,6 +53,10 @@ export default function ShareData() {
     
     if (sourceUrl) {
       setFormData(prev => ({ ...prev, sourceUrl }));
+    }
+    
+    if (site || serviceName) {
+      setFormData(prev => ({ ...prev, siteName: site || serviceName }));
     }
   }, [searchParams]);
 
@@ -224,6 +227,19 @@ export default function ShareData() {
                   <span>Review privacy policy</span>
                   <ExternalLink className="h-4 w-4" />
                 </a>
+              </div>
+            )}
+
+            {formData.siteName && (
+              <div className="p-4 bg-orange-50 border border-orange-200 rounded-md">
+                <div className="flex items-center space-x-2">
+                  <Shield className="h-5 w-5 text-orange-600" />
+                  <span className="text-sm font-medium text-orange-900">Consent Detection</span>
+                </div>
+                <p className="mt-2 text-sm text-orange-700">
+                  This consent was detected from your interaction on <strong>{formData.siteName}</strong>. 
+                  Review the details and set an expiry date to issue your blockchain consent token.
+                </p>
               </div>
             )}
 
