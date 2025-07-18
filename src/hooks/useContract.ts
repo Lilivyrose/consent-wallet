@@ -128,6 +128,12 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     } catch (error: any) {
       console.error('Error fetching consents:', error);
       
+      // Handle specific RPC node synchronization errors
+      if (error.data?.message?.includes('missing trie node')) {
+        setContractError('Blockchain node synchronization error: The RPC provider is unable to retrieve contract data. This might be a temporary network issue. Please try again later or consider switching your MetaMask RPC URL.');
+        return;
+      }
+      
       // Provide specific error messages based on error type
       if (error.code === 'BAD_DATA' || error.message.includes('could not decode result data')) {
         setContractError('Contract ABI mismatch or contract not properly deployed. Please check CONTRACT_SETUP_INSTRUCTIONS.md for proper configuration.');
