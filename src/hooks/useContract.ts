@@ -135,7 +135,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       }
       
       // Handle coalesce errors (also RPC related)
-      if (error.code === 'UNKNOWN_ERROR' && error.message?.includes('could not coalesce error')) {
+      if (error.code === 'UNKNOWN_ERROR' && (error.message?.includes('could not coalesce error') || error.message?.includes('missing trie node'))) {
         setContractError('Network connectivity issue: Unable to connect to the blockchain. Please check your internet connection and try again, or switch to a different RPC endpoint in MetaMask.');
         return;
       }
