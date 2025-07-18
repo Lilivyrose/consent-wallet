@@ -180,24 +180,15 @@ class ConsentWalletBackground {
   }
   
   async handleTabUpdate(tabId, changeInfo, tab) {
-    // Inject content script when page is loaded
+    // Trigger consent scan when page is loaded (content script already injected via manifest)
     if (changeInfo.status === 'complete' && tab.url) {
       const { settings } = await chrome.storage.local.get(['settings']);
       
       if (settings.autoDetection && this.shouldScanUrl(tab.url)) {
-        try {
-          await chrome.scripting.executeScript({
-            target: { tabId },
-            files: ['content.js']
-          });
-          
-          // Trigger consent scan after a delay
-          setTimeout(() => {
-            chrome.tabs.sendMessage(tabId, { action: 'scanForConsent' });
-          }, 3000);
-        } catch (error) {
-          console.log('Could not inject content script:', error);
-        }
+        // Trigger consent scan after a delay
+        setTimeout(() => {
+          chrome.tabs.sendMessage(tabId, { action: 'scanForConsent' });
+        }, 3000);
       }
     }
   }

@@ -1,5 +1,5 @@
 // Replace these placeholders with your actual deployed contract details
-export const CONTRACT_ADDRESS = "0x742d35Cc6634C0532925a3b8D4C9db96C4b5Da5e".toLowerCase(); // Fixed checksum - use lowercase for compatibility
+export const CONTRACT_ADDRESS = "0xa9fF8cE954968bF402062b48D056582F8E344174".toLowerCase();
 
 // Replace this with your actual contract ABI from the deployment
 export const CONTRACT_ABI = [
