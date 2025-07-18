@@ -336,7 +336,7 @@ class ConsentDetector {
   openConsentWallet(consentData) {
     // Create URL parameters for autofill
     const params = new URLSearchParams({
-      to: consentData.recipientAddress,
+      to: consentData.recipientAddress || '0x742d35Cc6634C0532925a3b8D4C9db96C4b5Da5e',
       site: consentData.siteName,
       serviceName: consentData.siteName,
       purpose: consentData.purpose,
@@ -345,9 +345,9 @@ class ConsentDetector {
       sourceUrl: window.location.href
     });
     
-    // Open Consent Wallet in new tab
+    // Navigate to Consent Wallet in same tab
     const consentWalletUrl = `http://localhost:5173/autofill-consent?${params.toString()}`;
-    window.open(consentWalletUrl, '_blank');
+    window.location.href = consentWalletUrl;
   }
 }
 
