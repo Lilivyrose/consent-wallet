@@ -119,7 +119,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       console.log('📋 Raw contract response:', result);
       
       const formattedConsents: ConsentToken[] = result.map((consent: any) => ({
-        tokenId: Number(consent.tokenId),
+        tokenId: Number(consent.tokenId || consent[0]),
         recipient: consent.recipient,
         purpose: consent.purpose,
         expiryDate: Number(consent.expiryDate),

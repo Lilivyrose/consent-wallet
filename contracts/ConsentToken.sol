@@ -10,6 +10,7 @@ contract ConsentToken is ERC721, Ownable {
     Counters.Counter private _tokenIds;
 
     struct ConsentData {
+        uint256 tokenId;
         address recipient;
         string purpose;
         uint256 expiryDate;
@@ -48,6 +49,7 @@ contract ConsentToken is ERC721, Ownable {
         _mint(msg.sender, newTokenId);
 
         consentData[newTokenId] = ConsentData({
+            tokenId: newTokenId,
             recipient: recipient,
             purpose: purpose,
             expiryDate: expiryDate,

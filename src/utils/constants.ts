@@ -97,6 +97,7 @@ export const CONTRACT_ABI = [
     ],
     "name": "consentData",
     "outputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
       { "internalType": "address", "name": "recipient", "type": "address" },
       { "internalType": "string", "name": "purpose", "type": "string" },
       { "internalType": "uint256", "name": "expiryDate", "type": "uint256" },
@@ -126,6 +127,7 @@ export const CONTRACT_ABI = [
     "outputs": [
       {
         "components": [
+          { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
           { "internalType": "address", "name": "recipient", "type": "address" },
           { "internalType": "string", "name": "purpose", "type": "string" },
           { "internalType": "uint256", "name": "expiryDate", "type": "uint256" },
