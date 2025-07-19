@@ -277,3 +277,25 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Built with ❤️ for a more transparent and user-controlled web**
 
 *Consent Wallet - Empowering users to take control of their digital privacy through blockchain technology.*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+**Built with ❤️ for a more transparent and user-controlled web**
+
+*Consent Wallet - Empowering users to take control of their digital privacy through blockchain technology  swdefrgthyjukilo;pedfrgthyjul.*
