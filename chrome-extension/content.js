@@ -104,14 +104,11 @@ class ConsentDetector {
     });
   }
   
-  async handleConsentDetected(element) {
+  handleConsentDetected(element) {
     console.log('🔍 Consent prompt detected:', element);
     
-    // Extract consent information (now async for summary)
+    // Extract consent information
     const consentData = this.extractConsentData(element);
-    // Wait for summary
-    consentData.termsSummary = await consentData.termsSummaryPromise;
-    delete consentData.termsSummaryPromise;
     
     // Send to background script
     chrome.runtime.sendMessage({
@@ -130,48 +127,15 @@ class ConsentDetector {
     const privacyPolicyUrl = this.findPrivacyPolicyUrl();
     const dataTypes = this.extractDataTypes();
     const purpose = this.extractPurpose(element);
-    // New: extract and summarize terms text
-    const termsSummaryPromise = this.extractAndSummarizeTerms(element, privacyPolicyUrl);
-    // Return a promise for async summary
+    
     return {
       siteName,
       privacyPolicyUrl,
       dataTypes,
       purpose,
       recipientAddress: this.extractRecipientAddress(),
-      detectedElement: element.outerHTML.substring(0, 500), // Truncate for storage
-      termsSummaryPromise // async summary
+      detectedElement: element.outerHTML.substring(0, 500) // Truncate for storage
     };
-  }
-
-  async extractAndSummarizeTerms(element, privacyPolicyUrl) {
-    // Try to get text from modal first
-    let text = '';
-    const container = element.closest('[class*="modal"], [class*="popup"], [class*="consent"]') || element.parentElement;
-    if (container) {
-      text = container.textContent || '';
-    }
-    // If not enough text, try fetching the privacy/terms page
-    if ((!text || text.length < 200) && privacyPolicyUrl) {
-      try {
-        const resp = await fetch(privacyPolicyUrl);
-        const html = await resp.text();
-        const doc = new DOMParser().parseFromString(html, 'text/html');
-        text = doc.body.textContent || '';
-      } catch (e) {
-        // Ignore fetch errors
-      }
-    }
-    // Summarize: take first 3-5 sentences
-    const summary = this.summarizeText(text, 5);
-    return summary;
-  }
-
-  summarizeText(text, maxSentences = 5) {
-    if (!text) return '';
-    // Split into sentences (simple regex)
-    const sentences = text.match(/[^.!?\n]+[.!?\n]+/g) || [];
-    return sentences.slice(0, maxSentences).join(' ').trim();
   }
   
   extractSiteName() {
@@ -369,7 +333,7 @@ class ConsentDetector {
     });
   }
   
-  async openConsentWallet(consentData) {
+  openConsentWallet(consentData) {
     // Create URL parameters for autofill
     const params = new URLSearchParams({
       to: consentData.recipientAddress,
@@ -378,11 +342,11 @@ class ConsentDetector {
       purpose: consentData.purpose,
       fields: consentData.dataTypes.join(','),
       privacyUrl: consentData.privacyPolicyUrl || window.location.href,
-      sourceUrl: window.location.href,
-      termsSummary: consentData.termsSummary || ''
+      sourceUrl: window.location.href
     });
-    // Open Consent Wallet in new tab (now /issue-consent)
-    const consentWalletUrl = `http://localhost:5173/issue-consent?${params.toString()}`;
+    
+    // Open Consent Wallet in new tab
+    const consentWalletUrl = `http://localhost:5173/autofill-consent?${params.toString()}`;
     window.open(consentWalletUrl, '_blank');
   }
 }
