@@ -29,16 +29,17 @@ export const CONTRACT_ABI = [
     "name": "getMyConsents",
     "outputs": [
       {
+        "internalType": "struct ConsentData[]",
+        "name": "",
+        "type": "tuple[]",
         "components": [
-          {"internalType": "uint256", "name": "tokenId", "type": "uint256"},
           {"internalType": "address", "name": "recipient", "type": "address"},
           {"internalType": "string", "name": "purpose", "type": "string"},
           {"internalType": "uint256", "name": "expiryDate", "type": "uint256"},
-          {"internalType": "bool", "name": "isRevoked", "type": "bool"}
-        ],
-        "internalType": "struct ConsentToken[]",
-        "name": "",
-        "type": "tuple[]"
+          {"internalType": "bool", "name": "isRevoked", "type": "bool"},
+          {"internalType": "string", "name": "website", "type": "string"},
+          {"internalType": "string", "name": "dataFields", "type": "string"}
+        ]
       }
     ],
     "stateMutability": "view",
