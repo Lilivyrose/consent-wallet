@@ -31,33 +31,22 @@ export default function ShareData() {
     const fields = searchParams.get('fields');
     const privacyUrl = searchParams.get('privacyUrl');
     const sourceUrl = searchParams.get('sourceUrl');
+    const expiryDate = searchParams.get('expiryDate'); // If you want to support expiry autofill
 
-    console.log('AutofillConsent URL params:', { to, site, serviceName, purpose, fields, privacyUrl, sourceUrl });
-    if (to) {
-      setFormData(prev => ({ ...prev, recipient: normalizeAddress(to) }));
-    }
-    
-    if (purpose) {
-      setFormData(prev => ({ ...prev, purpose }));
-    }
-    
-    if (fields) {
-      // Parse comma-separated fields
-      const parsedFields = fields.split(',').map(field => field.trim()).filter(Boolean);
-      setFormData(prev => ({ ...prev, fields: parsedFields }));
-    }
-    
-    if (privacyUrl) {
-      setFormData(prev => ({ ...prev, privacyUrl }));
-    }
-    
-    if (sourceUrl) {
-      setFormData(prev => ({ ...prev, sourceUrl }));
-    }
-    
-    if (site || serviceName) {
-      setFormData(prev => ({ ...prev, siteName: site || serviceName }));
-    }
+    const parsedFields = fields
+      ? fields.split(',').map(field => field.trim()).filter(Boolean)
+      : [];
+
+    setFormData(prev => ({
+      ...prev,
+      recipient: to ? normalizeAddress(to) : '',
+      purpose: purpose || '',
+      fields: parsedFields,
+      privacyUrl: privacyUrl || '',
+      sourceUrl: sourceUrl || '',
+      siteName: site || serviceName || '',
+      expiryDate: expiryDate || '', // Only autofills if present in URL
+    }));
   }, [searchParams]);
 
   const handleSubmit = async (e) => {
@@ -103,6 +92,12 @@ export default function ShareData() {
     { id: 'address', label: 'Physical Address', icon: Globe },
     { id: 'birthdate', label: 'Date of Birth', icon: Calendar },
     { id: 'occupation', label: 'Occupation', icon: FileText },
+    { id: 'location', label: 'Location', icon: Globe },
+    { id: 'cookies', label: 'Cookies', icon: FileText },
+    { id: 'ip address', label: 'IP Address', icon: Globe },
+    { id: 'analytics', label: 'Analytics Data', icon: FileText },
+    { id: 'advertising', label: 'Advertising Data', icon: FileText },
+    { id: 'personal information', label: 'Personal Information', icon: FileText },
   ];
 
   const toggleField = (fieldId) => {

@@ -5,6 +5,7 @@ import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { IssueConsent } from './pages/IssueConsent';
 import { MyConsents } from './pages/MyConsents';
+import AutofillConsent from './pages/AutofillConsent';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/issue" element={<IssueConsent />} />
             <Route path="/my-consents" element={<MyConsents />} />
+            <Route path="/autofill-consent" element={<AutofillConsent />} />
           </Routes>
         </Layout>
       </Router>
