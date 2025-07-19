@@ -69,7 +69,24 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
       await onRevoke(tokenId);
     } catch (error) {
       console.error('Error revoking consent:', error);
-      alert('Failed to revoke consent. Please try again.');
+      // Handle specific error types
+      let errorMessage = 'Failed to revoke consent. Please try again.';
+      
+      if (error?.message?.includes('missing trie node') || error?.message?.includes('could not coalesce error')) {
+        errorMessage = 'Network connectivity issue: Unable to connect to the blockchain. Please check your internet connection and try again, or switch to a different RPC endpoint in MetaMask.';
+      } else if (error?.message?.includes('user rejected')) {
+        errorMessage = 'Transaction was rejected by user.';
+      } else if (error?.message?.includes('insufficient funds')) {
+        errorMessage = 'Insufficient BNB for gas fees. Please add more BNB to your wallet.';
+      } else if (error?.message?.includes('execution reverted')) {
+        errorMessage = 'Transaction failed - you may not be the owner of this consent token or it may already be revoked.';
+      } else if (error?.code === 'CALL_EXCEPTION') {
+        errorMessage = 'Contract function call failed. The contract may not be properly deployed or configured.';
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      alert(errorMessage);
     } finally {
       setRevokingTokens(prev => {
         const newSet = new Set(prev);
