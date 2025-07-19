@@ -51,6 +51,7 @@ export default function ShareData() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('handleSubmit called. formData:', formData);
     
     if (!isConnected) {
       setError('Please connect your wallet first');
@@ -109,6 +110,8 @@ export default function ShareData() {
     }));
   };
 
+  const isFormValid = formData.recipient && formData.purpose && formData.fields.length > 0;
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -140,7 +143,7 @@ export default function ShareData() {
                 id="recipient"
                 value={formData.recipient}
                 onChange={(e) => setFormData(prev => ({ ...prev, recipient: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="0x..."
                 required
               />
@@ -155,7 +158,7 @@ export default function ShareData() {
                 value={formData.purpose}
                 onChange={(e) => setFormData(prev => ({ ...prev, purpose: e.target.value }))}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 placeholder="Describe why you're sharing this data..."
                 required
               />
@@ -199,7 +202,7 @@ export default function ShareData() {
                 id="expiryDate"
                 value={formData.expiryDate}
                 onChange={(e) => setFormData(prev => ({ ...prev, expiryDate: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900"
                 min={new Date().toISOString().split('T')[0]}
               />
               <p className="mt-1 text-xs text-gray-500">
@@ -266,8 +269,8 @@ export default function ShareData() {
               </button>
               <button
                 type="submit"
-                disabled={isLoading || !isConnected}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!isFormValid}
+                className={`w-full py-3 px-6 rounded-md font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200 ${!isFormValid ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {isLoading ? 'Sharing...' : 'Share Data'}
               </button>
