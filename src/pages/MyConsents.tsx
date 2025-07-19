@@ -6,12 +6,7 @@ import { useContract } from '../hooks/useContract';
 
 export const MyConsents: React.FC = () => {
   const { wallet, provider } = useWallet();
-<<<<<<< HEAD
-  const { consents, revokeConsent, fetchConsents, loading, contractError, activateConsent, abandonConsent } = useContract(provider, wallet.account);
-=======
-  const { consents, revokeConsent, fetchConsents, loading, contractError } = useContract(provider, wallet.account, wallet.isCorrectNetwork);
->>>>>>> 7db4a64e806dbb27bfed435bb2b606da041b66a9
-
+  const { consents, revokeConsent, fetchConsents, loading, contractError, activateConsent, abandonConsent } = useContract(provider, wallet.account, wallet.isCorrectNetwork);
   if (!wallet.isConnected) {
     return <Navigate to="/" replace />;
   }

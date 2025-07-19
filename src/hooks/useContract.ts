@@ -4,6 +4,13 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI, validateContractConfig } from '../utils
 import { normalizeAddress } from '../utils/addressUtils';
 import { ConsentToken, ConsentFormData } from '../types';
 
+declare global {
+  interface Window {
+    activateConsentByTokenId?: (tokenId: number) => Promise<void>;
+    abandonConsentByTokenId?: (tokenId: number) => Promise<void>;
+  }
+}
+
 export const useContract = (provider: ethers.BrowserProvider | null, account: string | null, isCorrectNetwork: boolean) => {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [consents, setConsents] = useState<ConsentToken[]>([]);
@@ -59,6 +66,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         dataFields: data.dataFields || ''
       });
       
+      // Consent will be created with status 'Pending' (status=0) by the contract
       const tx = await contract.mintConsent(
         data.recipient, 
         data.purpose, 
@@ -68,9 +76,37 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       );
       console.log('📝 Transaction sent:', tx.hash);
       
-      await tx.wait();
+      const receipt = await tx.wait();
       console.log('✅ Transaction confirmed');
       
+      // Find the tokenId from the event logs (if available)
+      let tokenId: number | null = null;
+      if (receipt && receipt.logs) {
+        for (const log of receipt.logs) {
+          try {
+            const event = contract.interface.parseLog(log);
+            if (event.name === 'ConsentIssued') {
+              tokenId = Number(event.args.tokenId);
+              break;
+            }
+          } catch (e) {
+            // Not this event, skip
+          }
+        }
+      }
+      // Store last issued consent in localStorage for extension activation
+      if (tokenId) {
+        localStorage.setItem('lastIssuedConsent', JSON.stringify({
+          tokenId,
+          status: 'Pending',
+          site: window.location.hostname
+        }));
+      }
+      // Schedule a 10-minute timer for activation (handled by extension or backend)
+      if (tokenId) {
+        // You can call a callback or trigger a message to the extension here
+        // e.g., window.postMessage({ type: 'ConsentPending', tokenId, ... })
+      }
       await fetchConsents(); // Refresh consents after minting
     } catch (error) {
       console.error('Error minting consent:', error);
@@ -214,6 +250,24 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       fetchConsents();
     }
   }, [contract, account, isCorrectNetwork, fetchConsents]);
+
+  useEffect(() => {
+    // Expose a global function for extension to call
+    window.activateConsentByTokenId = async (tokenId) => {
+      try {
+        await activateConsent(tokenId);
+      } catch (e) {
+        console.error('Failed to activate consent from extension:', e);
+      }
+    };
+    window.abandonConsentByTokenId = async (tokenId) => {
+      try {
+        await abandonConsent(tokenId);
+      } catch (e) {
+        console.error('Failed to abandon consent from extension:', e);
+      }
+    };
+  }, [activateConsent, abandonConsent]);
 
   return {
     mintConsent,

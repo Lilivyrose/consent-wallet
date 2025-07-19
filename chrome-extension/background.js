@@ -42,6 +42,12 @@ class ConsentWalletBackground {
         
       case 'consentIssued':
         await this.handleConsentIssued(request.data);
+        // Schedule 10-minute abandonment alarm
+        if (request.data && request.data.tokenId) {
+          chrome.alarms.create(`abandon_${request.data.tokenId}`, {
+            delayInMinutes: 10
+          });
+        }
         break;
         
       case 'consentRevoked':
@@ -55,6 +61,20 @@ class ConsentWalletBackground {
         
       case 'scheduleExpiryReminder':
         await this.scheduleExpiryReminder(request.data);
+        break;
+      case 'activateConsent':
+        // Inject a script into the page to call window.activateConsentByTokenId(tokenId)
+        if (sender.tab && sender.tab.id && request.tokenId) {
+          chrome.scripting.executeScript({
+            target: { tabId: sender.tab.id },
+            func: (tokenId) => {
+              if (window.activateConsentByTokenId) {
+                window.activateConsentByTokenId(tokenId);
+              }
+            },
+            args: [request.tokenId]
+          });
+        }
         break;
     }
   }
@@ -155,6 +175,26 @@ class ConsentWalletBackground {
     if (alarm.name.startsWith('expiry_')) {
       const tokenId = alarm.name.replace('expiry_', '');
       await this.handleExpiryReminder(tokenId);
+    }
+    // Handle 10-minute abandonment
+    if (alarm.name.startsWith('abandon_')) {
+      const tokenId = alarm.name.replace('abandon_', '');
+      // Check if consent is still pending (optional: fetch from contract or local storage)
+      // Inject a script to call window.abandonConsentByTokenId(tokenId)
+      // Find all tabs for the site, or just use the last known tab
+      chrome.tabs.query({}, (tabs) => {
+        for (const tab of tabs) {
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: (tokenId) => {
+              if (window.abandonConsentByTokenId) {
+                window.abandonConsentByTokenId(Number(tokenId));
+              }
+            },
+            args: [tokenId]
+          });
+        }
+      });
     }
   }
   

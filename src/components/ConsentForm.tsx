@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, User, FileText, Calendar, CheckCircle, AlertTriangle, Globe, Tag } from 'lucide-react';
 import { ConsentFormData } from '../types';
 import { useWallet } from '../contexts/WalletContext';
@@ -10,7 +10,7 @@ interface ConsentFormProps {
   onSubmit: (data: ConsentFormData) => Promise<void>;
   loading: boolean;
   contractError?: string | null;
-  autofill?: Partial<ConsentFormData>;
+  autofill?: Partial<ConsentFormData> & { returnUrl?: string };
 }
 
 export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, contractError, autofill }) => {
@@ -22,7 +22,16 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
     website: autofill?.website || '',
     dataFields: autofill?.dataFields || ''
   });
-  const returnUrl = autofill?.returnUrl;
+
+  useEffect(() => {
+    setFormData({
+      recipient: autofill?.recipient || '',
+      purpose: autofill?.purpose || '',
+      expiryDate: autofill?.expiryDate || '',
+      website: autofill?.website || '',
+      dataFields: autofill?.dataFields || ''
+    });
+  }, [autofill]);
 
   const [errors, setErrors] = useState<Partial<ConsentFormData>>({});
   const [success, setSuccess] = useState(false);
@@ -70,19 +79,13 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
       setFormData({ recipient: '', purpose: '', expiryDate: '', website: '', dataFields: '' });
       setErrors({});
       setSuccess(true);
-<<<<<<< HEAD
+      setShowRiskAssessment(false);
       setTimeout(() => {
         setSuccess(false);
-        if (returnUrl) {
-          window.location.href = returnUrl;
-        } else if (formData.website) {
-          window.location.href = formData.website;
+        if (autofill?.returnUrl) {
+          window.location.href = autofill.returnUrl;
         }
-      }, 2000);
-=======
-      setShowRiskAssessment(false);
-      setTimeout(() => setSuccess(false), 5000);
->>>>>>> 7db4a64e806dbb27bfed435bb2b606da041b66a9
+      }, 1000);
     } catch (error) {
       console.error('Error submitting form:', error);
       const errorMessage = formatTransactionError(error);

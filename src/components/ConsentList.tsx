@@ -6,12 +6,14 @@ import { useWallet } from '../contexts/WalletContext';
 interface ConsentListProps {
   consents: ConsentToken[];
   onRevoke: (tokenId: number) => Promise<void>;
+  onActivate?: (tokenId: number) => Promise<void>;
+  onAbandon?: (tokenId: number) => Promise<void>;
   onRefresh?: () => Promise<void>;
   loading: boolean;
   contractError?: string | null;
 }
 
-export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, onRefresh, loading, contractError }) => {
+export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, onActivate, onAbandon, onRefresh, loading, contractError }) => {
   const { wallet } = useWallet();
   const [revokingTokens, setRevokingTokens] = React.useState<Set<number>>(new Set());
 
@@ -25,8 +27,9 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
 
   const getStatus = (consent: ConsentToken) => {
     if (consent.isRevoked) return 'revoked';
+    if (consent.status) return consent.status.toLowerCase(); // 'pending', 'active', 'abandoned'
     if (consent.expiryDate * 1000 < Date.now()) return 'expired';
-    return 'active';
+    return 'unknown';
   };
 
   const getStatusIcon = (status: string) => {

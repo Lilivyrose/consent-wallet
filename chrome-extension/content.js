@@ -39,6 +39,64 @@ class ConsentDetector {
         this.scanForConsentPrompts();
       }
     });
+
+    // --- Login detection logic (option B) ---
+    this.monitorLoginRequests();
+  }
+
+  monitorLoginRequests() {
+    // Patch fetch
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const response = await originalFetch.apply(this, args);
+      this.checkIfLoginRequest(args[0], args[1]);
+      return response;
+    };
+
+    // Patch XMLHttpRequest
+    const origOpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url, ...rest) {
+      this._consentWalletUrl = url;
+      return origOpen.apply(this, [method, url, ...rest]);
+    };
+    const origSend = XMLHttpRequest.prototype.send;
+    XMLHttpRequest.prototype.send = function(...args) {
+      this.addEventListener('load', function() {
+        if (this._consentWalletUrl) {
+          window.ConsentDetector.checkIfLoginRequest(this._consentWalletUrl);
+        }
+      });
+      return origSend.apply(this, args);
+    };
+  }
+
+  checkIfLoginRequest(url, options) {
+    // Heuristic: look for 'login' or 'signin' in the URL
+    if (typeof url === 'string' && /(login|signin)/i.test(url)) {
+      // Check for a pending consent for this site
+      const pendingConsent = this.getPendingConsentForSite();
+      if (pendingConsent) {
+        // Send message to background or directly call contract to activate
+        chrome.runtime.sendMessage({
+          action: 'activateConsent',
+          tokenId: pendingConsent.tokenId,
+          site: window.location.hostname
+        });
+      }
+    }
+  }
+
+  getPendingConsentForSite() {
+    // Example: store last issued consent in localStorage/sessionStorage after issuance
+    try {
+      const consentStr = localStorage.getItem('lastIssuedConsent');
+      if (!consentStr) return null;
+      const consent = JSON.parse(consentStr);
+      if (consent && consent.status === 'Pending' && consent.site === window.location.hostname) {
+        return consent;
+      }
+    } catch (e) {}
+    return null;
   }
   
   observeDOM() {
