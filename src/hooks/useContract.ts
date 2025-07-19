@@ -102,6 +102,30 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     }
   };
 
+  const activateConsent = async (tokenId: number) => {
+    if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
+    setLoading(true);
+    try {
+      const tx = await contract.activateConsent(tokenId);
+      await tx.wait();
+      await fetchConsents();
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const abandonConsent = async (tokenId: number) => {
+    if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
+    setLoading(true);
+    try {
+      const tx = await contract.abandonConsent(tokenId);
+      await tx.wait();
+      await fetchConsents();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchConsents = useCallback(async () => {
     if (!contract || !account) return;
     if (contractError) {
@@ -146,7 +170,9 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         expiryDate: Number(consent.expiryDate),
         isRevoked: consent.isRevoked,
         website: consent.website || '',
-        dataFields: consent.dataFields || ''
+        dataFields: consent.dataFields || '',
+        status: consent.status === 0 ? 'Pending' : consent.status === 1 ? 'Active' : 'Abandoned',
+        issuedAt: Number(consent.issuedAt)
       }));
       
       console.log('✨ Formatted consents:', formattedConsents);
@@ -191,6 +217,8 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     mintConsent,
     revokeConsent,
     fetchConsents,
+    activateConsent,
+    abandonConsent,
     consents,
     loading,
     contractError

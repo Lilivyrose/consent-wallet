@@ -20,6 +20,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
     website: autofill?.website || '',
     dataFields: autofill?.dataFields || ''
   });
+  const returnUrl = autofill?.returnUrl;
 
   const [errors, setErrors] = useState<Partial<ConsentFormData>>({});
   const [success, setSuccess] = useState(false);
@@ -50,7 +51,14 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
       setFormData({ recipient: '', purpose: '', expiryDate: '', website: '', dataFields: '' });
       setErrors({});
       setSuccess(true);
-      setTimeout(() => setSuccess(false), 5000);
+      setTimeout(() => {
+        setSuccess(false);
+        if (returnUrl) {
+          window.location.href = returnUrl;
+        } else if (formData.website) {
+          window.location.href = formData.website;
+        }
+      }, 2000);
     } catch (error) {
       console.error('Error submitting form:', error);
       const errorMessage = formatTransactionError(error);

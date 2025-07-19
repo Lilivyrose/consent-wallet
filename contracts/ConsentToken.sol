@@ -9,6 +9,8 @@ contract ConsentToken is ERC721, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
+    enum ConsentStatus { Pending, Active, Abandoned }
+
     struct ConsentData {
         address recipient;
         string purpose;
@@ -16,6 +18,8 @@ contract ConsentToken is ERC721, Ownable {
         bool isRevoked;
         string website;
         string dataFields;
+        ConsentStatus status;
+        uint256 issuedAt;
     }
 
     mapping(uint256 => ConsentData) public consentData;
@@ -53,7 +57,9 @@ contract ConsentToken is ERC721, Ownable {
             expiryDate: expiryDate,
             isRevoked: false,
             website: website,
-            dataFields: dataFields
+            dataFields: dataFields,
+            status: ConsentStatus.Pending,
+            issuedAt: block.timestamp
         });
 
         userTokens[msg.sender].push(newTokenId);
@@ -77,6 +83,20 @@ contract ConsentToken is ERC721, Ownable {
         consentData[tokenId].isRevoked = true;
 
         emit ConsentRevoked(tokenId, msg.sender);
+    }
+
+    function activateConsent(uint256 tokenId) external {
+        require(_exists(tokenId), "Token does not exist");
+        require(ownerOf(tokenId) == msg.sender, "Not the token owner");
+        require(consentData[tokenId].status == ConsentStatus.Pending, "Consent not pending");
+        consentData[tokenId].status = ConsentStatus.Active;
+    }
+
+    function abandonConsent(uint256 tokenId) external {
+        require(_exists(tokenId), "Token does not exist");
+        require(consentData[tokenId].status == ConsentStatus.Pending, "Consent not pending");
+        require(block.timestamp > consentData[tokenId].issuedAt + 10 minutes, "Too early to abandon");
+        consentData[tokenId].status = ConsentStatus.Abandoned;
     }
 
     function getMyConsents(address owner) external view returns (ConsentData[] memory) {

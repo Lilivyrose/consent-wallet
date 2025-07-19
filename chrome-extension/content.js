@@ -337,17 +337,17 @@ class ConsentDetector {
     // Create URL parameters for autofill
     const params = new URLSearchParams({
       to: consentData.recipientAddress,
-      site: consentData.siteName,
-      serviceName: consentData.siteName,
+      website: window.location.href, // Use the actual page URL for autofill
       purpose: consentData.purpose,
       fields: consentData.dataTypes.join(','),
       privacyUrl: consentData.privacyPolicyUrl || window.location.href,
-      sourceUrl: window.location.href
+      sourceUrl: window.location.href,
+      returnUrl: window.location.href // Add returnUrl for redirect
     });
     
-    // Open Consent Wallet in new tab (now /issue instead of /autofill-consent)
+    // Open Consent Wallet in the current tab (not a new tab)
     const consentWalletUrl = `http://localhost:5173/issue?${params.toString()}`;
-    window.open(consentWalletUrl, '_blank');
+    window.location.href = consentWalletUrl;
   }
 }
 

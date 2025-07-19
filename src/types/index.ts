@@ -1,3 +1,5 @@
+export type ConsentStatus = "Pending" | "Active" | "Abandoned";
+
 export interface ConsentToken {
   tokenId: number;
   recipient: string;
@@ -6,6 +8,8 @@ export interface ConsentToken {
   isRevoked: boolean;
   website?: string;
   dataFields?: string;
+  status?: ConsentStatus;
+  issuedAt?: number;
 }
 
 export interface WalletState {

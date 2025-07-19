@@ -6,12 +6,14 @@ import { useWallet } from '../contexts/WalletContext';
 interface ConsentListProps {
   consents: ConsentToken[];
   onRevoke: (tokenId: number) => Promise<void>;
+  onActivate: (tokenId: number) => Promise<void>;
+  onAbandon: (tokenId: number) => Promise<void>;
   onRefresh?: () => Promise<void>;
   loading: boolean;
   contractError?: string | null;
 }
 
-export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, onRefresh, loading, contractError }) => {
+export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, onActivate, onAbandon, onRefresh, loading, contractError }) => {
   const { wallet } = useWallet();
   const [revokingTokens, setRevokingTokens] = React.useState<Set<number>>(new Set());
 
@@ -260,6 +262,27 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                     </>
                   )}
                 </button>
+              )}
+
+              {consent.status === "Pending" && (
+                <div className="flex gap-2 mt-4">
+                  <button
+                    type="button"
+                    onClick={() => onActivate(consent.tokenId)}
+                    disabled={loading}
+                    className="flex-1 px-4 py-2 bg-green-500 bg-opacity-20 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all duration-200 disabled:opacity-50"
+                  >
+                    Activate
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onAbandon(consent.tokenId)}
+                    disabled={loading}
+                    className="flex-1 px-4 py-2 bg-gray-500 bg-opacity-20 text-gray-400 rounded-lg hover:bg-gray-500 hover:text-white transition-all duration-200 disabled:opacity-50"
+                  >
+                    Abandon
+                  </button>
+                </div>
               )}
             </div>
           );

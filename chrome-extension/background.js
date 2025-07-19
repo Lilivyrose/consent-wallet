@@ -185,10 +185,10 @@ class ConsentWalletBackground {
       const { settings } = await chrome.storage.local.get(['settings']);
       
       if (settings.autoDetection && this.shouldScanUrl(tab.url)) {
-        // Trigger consent scan after a delay
-        setTimeout(() => {
-          chrome.tabs.sendMessage(tabId, { action: 'scanForConsent' });
-        }, 3000);
+          // Trigger consent scan after a delay
+          setTimeout(() => {
+            chrome.tabs.sendMessage(tabId, { action: 'scanForConsent' });
+          }, 3000);
       }
     }
   }
