@@ -14,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/issue" element={<IssueConsent />} />
+            <Route path="/issue-consent" element={<IssueConsent />} />
             <Route path="/my-consents" element={<MyConsents />} />
           </Routes>
         </Layout>

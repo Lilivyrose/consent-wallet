@@ -16,7 +16,8 @@ export default function ShareData() {
     expiryDate: '',
     privacyUrl: '',
     sourceUrl: '',
-    siteName: ''
+    siteName: '',
+    termsSummary: '' // <-- add summary field
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +32,7 @@ export default function ShareData() {
     const fields = searchParams.get('fields');
     const privacyUrl = searchParams.get('privacyUrl');
     const sourceUrl = searchParams.get('sourceUrl');
+    const termsSummary = searchParams.get('termsSummary');
 
     console.log('AutofillConsent URL params:', { to, site, serviceName, purpose, fields, privacyUrl, sourceUrl });
     if (to) {
@@ -57,6 +59,10 @@ export default function ShareData() {
     
     if (site || serviceName) {
       setFormData(prev => ({ ...prev, siteName: site || serviceName }));
+    }
+
+    if (termsSummary) {
+      setFormData(prev => ({ ...prev, termsSummary }));
     }
   }, [searchParams]);
 
@@ -126,6 +132,16 @@ export default function ShareData() {
             <p className="mt-2 text-sm text-gray-600">
               Securely share your personal information with verified recipients
             </p>
+            {/* Show terms summary if present */}
+            {formData.termsSummary && (
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+                <div className="flex items-center space-x-2 mb-2">
+                  <FileText className="h-5 w-5 text-yellow-600" />
+                  <span className="text-sm font-medium text-yellow-900">Summary of Terms/Consent</span>
+                </div>
+                <p className="text-sm text-yellow-800 whitespace-pre-line">{formData.termsSummary}</p>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">

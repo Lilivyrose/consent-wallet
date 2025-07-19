@@ -42,26 +42,29 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     }
   }, [provider, account]);
 
-  const mintConsent = async (data: ConsentFormData) => {
+  const mintConsent = async (data: ConsentFormData & { website?: string; dataFields?: string }) => {
     if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
     if (contractError) throw new Error(`Contract error: ${contractError}`);
-    
     setLoading(true);
     try {
       const expiryTimestamp = Math.floor(new Date(data.expiryDate).getTime() / 1000);
-      
       console.log('🚀 Minting consent with params:', {
         recipient: data.recipient,
         purpose: data.purpose,
-        expiryTimestamp
+        expiryTimestamp,
+        website: data.website,
+        dataFields: data.dataFields
       });
-      
-      const tx = await contract.mintConsent(data.recipient, data.purpose, expiryTimestamp);
+      const tx = await contract.mintConsent(
+        data.recipient,
+        data.purpose,
+        expiryTimestamp,
+        data.website || '',
+        data.dataFields || ''
+      );
       console.log('📝 Transaction sent:', tx.hash);
-      
       await tx.wait();
       console.log('✅ Transaction confirmed');
-      
       await fetchConsents(); // Refresh consents after minting
     } catch (error) {
       console.error('Error minting consent:', error);

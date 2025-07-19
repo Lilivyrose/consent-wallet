@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Send, User, FileText, Calendar, CheckCircle, AlertTriangle } from 'lucide-react';
 import { ConsentFormData } from '../types';
 import { useWallet } from '../contexts/WalletContext';
@@ -8,15 +8,28 @@ interface ConsentFormProps {
   onSubmit: (data: ConsentFormData) => Promise<void>;
   loading: boolean;
   contractError?: string | null;
+  autofill?: Partial<ConsentFormData & { termsSummary?: string }>;
 }
 
-export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, contractError }) => {
+export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, contractError, autofill }) => {
   const { wallet } = useWallet();
   const [formData, setFormData] = useState<ConsentFormData>({
     recipient: '',
     purpose: '',
     expiryDate: ''
   });
+  const [summary, setSummary] = useState('');
+
+  useEffect(() => {
+    if (autofill) {
+      setFormData(prev => ({
+        ...prev,
+        ...autofill,
+        expiryDate: autofill.expiryDate || ''
+      }));
+      setSummary(autofill.termsSummary || '');
+    }
+  }, [autofill]);
 
   const [errors, setErrors] = useState<Partial<ConsentFormData>>({});
   const [success, setSuccess] = useState(false);
@@ -74,6 +87,17 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
             <p className="text-orange-400 font-semibold">Consent Token Issued Successfully!</p>
             <p className="text-orange-300 text-sm">Your consent token has been minted on the blockchain.</p>
           </div>
+        </div>
+      )}
+
+      {/* Show summary if present */}
+      {summary && (
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+          <div className="flex items-center space-x-2 mb-2">
+            <FileText className="h-5 w-5 text-yellow-600" />
+            <span className="text-sm font-medium text-yellow-900">Summary of Terms/Consent</span>
+          </div>
+          <p className="text-sm text-yellow-800 whitespace-pre-line">{summary}</p>
         </div>
       )}
 
