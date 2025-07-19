@@ -120,10 +120,10 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       
       const formattedConsents: ConsentToken[] = result.map((consent: any) => ({
         tokenId: Number(consent.tokenId || consent[0]),
-        recipient: consent.recipient,
-        purpose: consent.purpose,
-        expiryDate: Number(consent.expiryDate),
-        isRevoked: consent.isRevoked
+        recipient: consent.recipient || consent[1],
+        purpose: consent.purpose || consent[2],
+        expiryDate: Number(consent.expiryDate || consent[3]),
+        isRevoked: consent.isRevoked || consent[4]
       }));
       
       console.log('✨ Formatted consents:', formattedConsents);
