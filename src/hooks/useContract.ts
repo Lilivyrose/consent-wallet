@@ -53,10 +53,18 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       console.log('🚀 Minting consent with params:', {
         recipient: data.recipient,
         purpose: data.purpose,
-        expiryTimestamp
+        expiryTimestamp,
+        website: data.website || '',
+        dataFields: data.dataFields || ''
       });
       
-      const tx = await contract.mintConsent(data.recipient, data.purpose, expiryTimestamp);
+      const tx = await contract.mintConsent(
+        data.recipient, 
+        data.purpose, 
+        expiryTimestamp,
+        data.website || '',
+        data.dataFields || ''
+      );
       console.log('📝 Transaction sent:', tx.hash);
       
       await tx.wait();
@@ -112,15 +120,33 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       }
       
       const normalizedAccount = normalizeAddress(account);
-      const result = await contract.getMyConsents(normalizedAccount);
-      console.log('📋 Raw contract response:', result);
       
-      const formattedConsents: ConsentToken[] = result.map((consent: any) => ({
-        tokenId: Number(consent.tokenId),
+      // Try to use the new function that returns tokenIds
+      let tokenIds: number[] = [];
+      let consentsData: any[] = [];
+      
+      try {
+        const [ids, data] = await contract.getMyConsentsWithIds(normalizedAccount);
+        tokenIds = ids.map((id: any) => Number(id));
+        consentsData = data;
+        console.log('📋 Raw contract response (with IDs):', { tokenIds, consentsData });
+      } catch (error) {
+        // Fallback to old method if new function doesn't exist
+        console.log('Using fallback method for fetching consents');
+        consentsData = await contract.getMyConsents(normalizedAccount);
+        // Generate sequential IDs as fallback
+        tokenIds = consentsData.map((_: any, index: number) => index + 1);
+        console.log('📋 Raw contract response (fallback):', consentsData);
+      }
+      
+      const formattedConsents: ConsentToken[] = consentsData.map((consent: any, index: number) => ({
+        tokenId: tokenIds[index],
         recipient: consent.recipient,
         purpose: consent.purpose,
         expiryDate: Number(consent.expiryDate),
-        isRevoked: consent.isRevoked
+        isRevoked: consent.isRevoked,
+        website: consent.website || '',
+        dataFields: consent.dataFields || ''
       }));
       
       console.log('✨ Formatted consents:', formattedConsents);

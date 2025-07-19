@@ -59,6 +59,15 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
     // Prevent default form submission behavior
     event?.preventDefault();
     
+    console.log('🔄 Attempting to revoke consent with tokenId:', tokenId, typeof tokenId);
+    
+    // Validate tokenId
+    if (!tokenId || isNaN(tokenId) || tokenId <= 0) {
+      console.error('Invalid tokenId:', tokenId);
+      alert('Invalid token ID. Please refresh the page and try again.');
+      return;
+    }
+    
     if (!wallet.isConnected || !wallet.isCorrectNetwork) {
       alert('Please connect to BNB Smart Chain Testnet');
       return;
@@ -171,6 +180,21 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                   </span>
                 </div>
 
+                {consent.website && consent.website.trim() !== '' && (
+                  <div className="flex items-center space-x-2 text-sm">
+                    <FileText className="h-4 w-4 text-gray-400" />
+                    <span className="text-orange-200">Website:</span>
+                    <a 
+                      href={consent.website.startsWith('http') ? consent.website : `https://${consent.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-orange-400 hover:text-orange-300 underline"
+                    >
+                      {consent.website}
+                    </a>
+                  </div>
+                )}
+
                 <div className="flex items-start space-x-2 text-sm">
                   <FileText className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
                   <div>
@@ -180,6 +204,25 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                     </p>
                   </div>
                 </div>
+
+                {consent.dataFields && consent.dataFields.trim() !== '' && (
+                  <div className="flex items-start space-x-2 text-sm">
+                    <FileText className="h-4 w-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <span className="text-orange-200">Data Fields:</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {consent.dataFields.split(',').map((field: string, index: number) => (
+                          <span 
+                            key={index}
+                            className="px-2 py-1 bg-orange-500 bg-opacity-20 text-orange-300 text-xs rounded-full"
+                          >
+                            {field.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center space-x-2 text-sm">
                   <Calendar className="h-4 w-4 text-gray-400" />

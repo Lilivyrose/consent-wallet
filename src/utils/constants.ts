@@ -44,6 +44,28 @@ export const CONTRACT_ABI = [
     "stateMutability": "view",
     "type": "function"
   },
+  {
+    "inputs": [{"internalType": "address", "name": "owner", "type": "address"}],
+    "name": "getMyConsentsWithIds",
+    "outputs": [
+      {"internalType": "uint256[]", "name": "", "type": "uint256[]"},
+      {
+        "components": [
+          {"internalType": "address", "name": "recipient", "type": "address"},
+          {"internalType": "string", "name": "purpose", "type": "string"},
+          {"internalType": "uint256", "name": "expiryDate", "type": "uint256"},
+          {"internalType": "bool", "name": "isRevoked", "type": "bool"},
+          {"internalType": "string", "name": "website", "type": "string"},
+          {"internalType": "string", "name": "dataFields", "type": "string"}
+        ],
+        "internalType": "struct ConsentData[]",
+        "name": "",
+        "type": "tuple[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
   // Events for real-time updates
   {
     "anonymous": false,

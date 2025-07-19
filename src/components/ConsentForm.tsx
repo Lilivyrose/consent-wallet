@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, User, FileText, Calendar, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Send, User, FileText, Calendar, CheckCircle, AlertTriangle, Globe, Tag } from 'lucide-react';
 import { ConsentFormData } from '../types';
 import { useWallet } from '../contexts/WalletContext';
 import { validateConsentForm, formatTransactionError } from '../utils/validation';
@@ -15,7 +15,9 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
   const [formData, setFormData] = useState<ConsentFormData>({
     recipient: '',
     purpose: '',
-    expiryDate: ''
+    expiryDate: '',
+    website: '',
+    dataFields: ''
   });
 
   const [errors, setErrors] = useState<Partial<ConsentFormData>>({});
@@ -44,7 +46,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
 
     try {
       await onSubmit(formData);
-      setFormData({ recipient: '', purpose: '', expiryDate: '' });
+      setFormData({ recipient: '', purpose: '', expiryDate: '', website: '', dataFields: '' });
       setErrors({});
       setSuccess(true);
       setTimeout(() => setSuccess(false), 5000);
@@ -137,6 +139,37 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
             {errors.purpose && (
               <p className="text-red-400 text-sm mt-1">{errors.purpose}</p>
             )}
+          </div>
+
+          <div>
+            <label className="flex items-center space-x-2 text-sm font-medium text-orange-200 mb-2">
+              <Globe className="h-4 w-4" />
+              <span>Website (Optional)</span>
+            </label>
+            <input
+              type="text"
+              name="website"
+              value={formData.website}
+              onChange={handleChange}
+              placeholder="example.com"
+              className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg border border-orange-500 border-opacity-30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-200 shadow-inner"
+            />
+          </div>
+
+          <div>
+            <label className="flex items-center space-x-2 text-sm font-medium text-orange-200 mb-2">
+              <Tag className="h-4 w-4" />
+              <span>Data Fields (Optional)</span>
+            </label>
+            <input
+              type="text"
+              name="dataFields"
+              value={formData.dataFields}
+              onChange={handleChange}
+              placeholder="email, name, location (comma-separated)"
+              className="w-full px-4 py-3 bg-white bg-opacity-5 rounded-lg border border-orange-500 border-opacity-30 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-200 shadow-inner"
+            />
+            <p className="text-orange-300 text-xs mt-1">Separate multiple fields with commas</p>
           </div>
 
           <div>

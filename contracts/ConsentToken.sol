@@ -90,6 +90,17 @@ contract ConsentToken is ERC721, Ownable {
         return consents;
     }
 
+    function getMyConsentsWithIds(address owner) external view returns (uint256[] memory, ConsentData[] memory) {
+        uint256[] memory tokenIds = userTokens[owner];
+        ConsentData[] memory consents = new ConsentData[](tokenIds.length);
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            consents[i] = consentData[tokenIds[i]];
+        }
+
+        return (tokenIds, consents);
+    }
+
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
         require(_exists(tokenId), "Token does not exist");
         return string(abi.encodePacked("https://api.consentwallet.com/token/", _toString(tokenId)));
