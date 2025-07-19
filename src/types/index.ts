@@ -4,8 +4,6 @@ export interface ConsentToken {
   purpose: string;
   expiryDate: number;
   isRevoked: boolean;
-  website: string;
-  dataFields: string;
 }
 
 export interface WalletState {
