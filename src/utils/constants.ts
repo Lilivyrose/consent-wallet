@@ -137,6 +137,8 @@ export const CONTRACT_ABI = [
           { "internalType": "bool", "name": "isRevoked", "type": "bool" },
           { "internalType": "string", "name": "website", "type": "string" },
           { "internalType": "string", "name": "dataFields", "type": "string" }
+          { "internalType": "string", "name": "website", "type": "string" },
+          { "internalType": "string", "name": "dataFields", "type": "string" }
         ]
       }
     ],

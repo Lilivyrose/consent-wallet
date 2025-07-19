@@ -123,7 +123,9 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         recipient: consent.recipient || consent[1],
         purpose: consent.purpose || consent[2],
         expiryDate: Number(consent.expiryDate || consent[3]),
-        isRevoked: consent.isRevoked || consent[4]
+        isRevoked: consent.isRevoked || consent[4],
+        website: consent.website || consent[5] || '',
+        dataFields: consent.dataFields || consent[6] || ''
       }));
       
       console.log('✨ Formatted consents:', formattedConsents);
