@@ -6,7 +6,7 @@ import { useContract } from '../hooks/useContract';
 
 export const IssueConsent: React.FC = () => {
   const { wallet, provider } = useWallet();
-  const { mintConsent, loading, contractError } = useContract(provider, wallet.account);
+  const { mintConsent, loading, contractError } = useContract(provider, wallet.account, wallet.isCorrectNetwork);
   const [searchParams] = useSearchParams();
 
   if (!wallet.isConnected) {

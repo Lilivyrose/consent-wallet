@@ -3,6 +3,8 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Shield, Globe, User, FileText, Calendar, CheckCircle, AlertTriangle, ExternalLink } from 'lucide-react';
 import { normalizeAddress } from '../utils/addressUtils';
 import { useWallet } from '../contexts/WalletContext';
+import { assessPrivacyRisk, DataCollectionRequest } from '../utils/privacyRiskAssessment';
+import { PrivacyRiskIndicator } from '../components/PrivacyRiskIndicator';
 
 export default function ShareData() {
   const [searchParams] = useSearchParams();
@@ -21,6 +23,22 @@ export default function ShareData() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Generate privacy risk assessment
+  const getPrivacyRiskAssessment = () => {
+    if (!formData.purpose || formData.fields.length === 0) return null;
+
+    const request: DataCollectionRequest = {
+      websiteName: formData.siteName || 'Unknown Website',
+      dataRequested: formData.fields,
+      purpose: formData.purpose,
+      website: formData.sourceUrl
+    };
+
+    return assessPrivacyRisk(request);
+  };
+
+  const riskAssessment = getPrivacyRiskAssessment();
 
   useEffect(() => {
     // Parse URL parameters
@@ -125,6 +143,13 @@ export default function ShareData() {
               Securely share your personal information with verified recipients
             </p>
           </div>
+
+          {/* Privacy Risk Assessment */}
+          {riskAssessment && (
+            <div className="p-6 border-b border-gray-200">
+              <PrivacyRiskIndicator assessment={riskAssessment} />
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
             {error && (

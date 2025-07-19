@@ -3,6 +3,8 @@ import { Send, User, FileText, Calendar, CheckCircle, AlertTriangle, Globe, Tag 
 import { ConsentFormData } from '../types';
 import { useWallet } from '../contexts/WalletContext';
 import { validateConsentForm, formatTransactionError } from '../utils/validation';
+import { assessPrivacyRisk, DataCollectionRequest } from '../utils/privacyRiskAssessment';
+import { PrivacyRiskIndicator } from './PrivacyRiskIndicator';
 
 interface ConsentFormProps {
   onSubmit: (data: ConsentFormData) => Promise<void>;
@@ -24,6 +26,23 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
 
   const [errors, setErrors] = useState<Partial<ConsentFormData>>({});
   const [success, setSuccess] = useState(false);
+  const [showRiskAssessment, setShowRiskAssessment] = useState(false);
+
+  // Generate privacy risk assessment when form data changes
+  const getPrivacyRiskAssessment = () => {
+    if (!formData.purpose || !formData.dataFields) return null;
+
+    const request: DataCollectionRequest = {
+      websiteName: formData.website || 'Unknown Website',
+      dataRequested: formData.dataFields.split(',').map(field => field.trim()).filter(Boolean),
+      purpose: formData.purpose,
+      website: formData.website
+    };
+
+    return assessPrivacyRisk(request);
+  };
+
+  const riskAssessment = getPrivacyRiskAssessment();
 
   const validateForm = () => {
     const validation = validateConsentForm(formData);
@@ -51,6 +70,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
       setFormData({ recipient: '', purpose: '', expiryDate: '', website: '', dataFields: '' });
       setErrors({});
       setSuccess(true);
+<<<<<<< HEAD
       setTimeout(() => {
         setSuccess(false);
         if (returnUrl) {
@@ -59,6 +79,10 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
           window.location.href = formData.website;
         }
       }, 2000);
+=======
+      setShowRiskAssessment(false);
+      setTimeout(() => setSuccess(false), 5000);
+>>>>>>> 7db4a64e806dbb27bfed435bb2b606da041b66a9
     } catch (error) {
       console.error('Error submitting form:', error);
       const errorMessage = formatTransactionError(error);
@@ -73,6 +97,11 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
     // Clear error when user starts typing
     if (errors[name as keyof ConsentFormData]) {
       setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+
+    // Show risk assessment when purpose and data fields are filled
+    if ((name === 'purpose' || name === 'dataFields') && value.trim()) {
+      setShowRiskAssessment(true);
     }
   };
 
@@ -105,6 +134,13 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, con
             <p className="text-red-400 font-semibold">Contract Configuration Error</p>
             <p className="text-red-300 text-sm">{contractError}</p>
           </div>
+        </div>
+      )}
+
+      {/* Privacy Risk Assessment */}
+      {showRiskAssessment && riskAssessment && (
+        <div className="mb-6">
+          <PrivacyRiskIndicator assessment={riskAssessment} />
         </div>
       )}
 
