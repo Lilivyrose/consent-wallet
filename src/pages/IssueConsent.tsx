@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 import { ConsentForm } from '../components/ConsentForm';
 import { useWallet } from '../contexts/WalletContext';
 import { useContract } from '../hooks/useContract';
@@ -7,10 +7,18 @@ import { useContract } from '../hooks/useContract';
 export const IssueConsent: React.FC = () => {
   const { wallet, provider } = useWallet();
   const { mintConsent, loading, contractError } = useContract(provider, wallet.account);
+  const [searchParams] = useSearchParams();
 
   if (!wallet.isConnected) {
     return <Navigate to="/" replace />;
   }
+
+  // Parse autofill values from URL params
+  const recipient = searchParams.get('to') || '';
+  const purpose = searchParams.get('purpose') || '';
+  const website = searchParams.get('website') || '';
+  const dataFields = searchParams.get('fields') || '';
+  const expiryDate = searchParams.get('expiryDate') || '';
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
@@ -23,7 +31,12 @@ export const IssueConsent: React.FC = () => {
         </p>
       </div>
 
-      <ConsentForm onSubmit={mintConsent} loading={loading} contractError={contractError} />
+      <ConsentForm
+        onSubmit={mintConsent}
+        loading={loading}
+        contractError={contractError}
+        autofill={{ recipient, purpose, website, dataFields, expiryDate }}
+      />
 
       <div className="backdrop-blur-md bg-white bg-opacity-5 rounded-2xl p-8 border border-orange-500 border-opacity-10 shadow-lg shadow-orange-500/10">
         <h3 className="text-2xl font-semibold mb-4 text-orange-400">Important Notes</h3>

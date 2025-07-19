@@ -345,8 +345,8 @@ class ConsentDetector {
       sourceUrl: window.location.href
     });
     
-    // Open Consent Wallet in new tab
-    const consentWalletUrl = `http://localhost:5173/autofill-consent?${params.toString()}`;
+    // Open Consent Wallet in new tab (now /issue instead of /autofill-consent)
+    const consentWalletUrl = `http://localhost:5173/issue?${params.toString()}`;
     window.open(consentWalletUrl, '_blank');
   }
 }

@@ -8,16 +8,17 @@ interface ConsentFormProps {
   onSubmit: (data: ConsentFormData) => Promise<void>;
   loading: boolean;
   contractError?: string | null;
+  autofill?: Partial<ConsentFormData>;
 }
 
-export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, contractError }) => {
+export const ConsentForm: React.FC<ConsentFormProps> = ({ onSubmit, loading, contractError, autofill }) => {
   const { wallet } = useWallet();
   const [formData, setFormData] = useState<ConsentFormData>({
-    recipient: '',
-    purpose: '',
-    expiryDate: '',
-    website: '',
-    dataFields: ''
+    recipient: autofill?.recipient || '',
+    purpose: autofill?.purpose || '',
+    expiryDate: autofill?.expiryDate || '',
+    website: autofill?.website || '',
+    dataFields: autofill?.dataFields || ''
   });
 
   const [errors, setErrors] = useState<Partial<ConsentFormData>>({});
