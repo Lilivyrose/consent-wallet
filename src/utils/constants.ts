@@ -1,7 +1,7 @@
 // Replace these placeholders with your actual deployed contract details
 export const CONTRACT_ADDRESS = "0xa9fF8cE954968bF402062b48D056582F8E344174".toLowerCase();
 
-// Complete ABI from the compiled contract
+// Replace this with your actual contract ABI from the deployment
 export const CONTRACT_ABI = [
   {
     "inputs": [],
@@ -126,6 +126,9 @@ export const CONTRACT_ABI = [
     "name": "getMyConsents",
     "outputs": [
       {
+        "internalType": "tuple[]",
+        "name": "",
+        "type": "tuple[]",
         "components": [
           { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
           { "internalType": "address", "name": "recipient", "type": "address" },
@@ -134,10 +137,7 @@ export const CONTRACT_ABI = [
           { "internalType": "bool", "name": "isRevoked", "type": "bool" },
           { "internalType": "string", "name": "website", "type": "string" },
           { "internalType": "string", "name": "dataFields", "type": "string" }
-        ],
-        "internalType": "struct ConsentToken.ConsentData[]",
-        "name": "",
-        "type": "tuple[]"
+        ]
       }
     ],
     "stateMutability": "view",
