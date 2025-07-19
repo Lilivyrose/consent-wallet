@@ -4,14 +4,14 @@ import { CONTRACT_ADDRESS, CONTRACT_ABI, validateContractConfig } from '../utils
 import { normalizeAddress } from '../utils/addressUtils';
 import { ConsentToken, ConsentFormData } from '../types';
 
-export const useContract = (provider: ethers.BrowserProvider | null, account: string | null) => {
+export const useContract = (provider: ethers.BrowserProvider | null, account: string | null, isCorrectNetwork: boolean) => {
   const [contract, setContract] = useState<ethers.Contract | null>(null);
   const [consents, setConsents] = useState<ConsentToken[]>([]);
   const [loading, setLoading] = useState(false);
   const [contractError, setContractError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (provider && account) {
+    if (provider && account && isCorrectNetwork) {
       const initializeContract = async () => {
         try {
           // Validate contract configuration
@@ -40,11 +40,12 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
       
       initializeContract();
     }
-  }, [provider, account]);
+  }, [provider, account, isCorrectNetwork]);
 
   const mintConsent = async (data: ConsentFormData) => {
     if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
     if (contractError) throw new Error(`Contract error: ${contractError}`);
+    if (!isCorrectNetwork) throw new Error('Please switch to BNB Smart Chain Testnet to perform this action.');
     
     setLoading(true);
     try {
@@ -82,6 +83,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
   const revokeConsent = async (tokenId: number) => {
     if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
     if (contractError) throw new Error(`Contract error: ${contractError}`);
+    if (!isCorrectNetwork) throw new Error('Please switch to BNB Smart Chain Testnet to perform this action.');
     
     setLoading(true);
     try {
@@ -103,7 +105,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
   };
 
   const fetchConsents = useCallback(async () => {
-    if (!contract || !account) return;
+    if (!contract || !account || !isCorrectNetwork) return;
     if (contractError) {
       console.error('Cannot fetch consents due to contract error:', contractError);
       return;
@@ -179,13 +181,13 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
     } finally {
       setLoading(false);
     }
-  }, [contract, account, contractError]);
+  }, [contract, account, contractError, isCorrectNetwork]);
 
   useEffect(() => {
-    if (contract && account) {
+    if (contract && account && isCorrectNetwork) {
       fetchConsents();
     }
-  }, [contract, account]);
+  }, [contract, account, isCorrectNetwork, fetchConsents]);
 
   return {
     mintConsent,
