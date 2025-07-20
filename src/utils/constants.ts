@@ -1,5 +1,5 @@
 // Replace these placeholders with your actual deployed contract details
-export const CONTRACT_ADDRESS = "0xF624578Df2f73FEc0eA1B07Be357723173d03903".toLowerCase();
+export const CONTRACT_ADDRESS = "0xB9381DE15e23099AFBca771fB3F0136394e232C8".toLowerCase();
 
 // Replace this with your actual contract ABI from the deployment
 export const CONTRACT_ABI = [
@@ -174,6 +174,32 @@ export const CONTRACT_ABI = [
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "abandonConsent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
+    "name": "activateConsent",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "to",
         "type": "address"
@@ -247,6 +273,16 @@ export const CONTRACT_ABI = [
         "internalType": "string",
         "name": "dataFields",
         "type": "string"
+      },
+      {
+        "internalType": "enum ConsentToken.ConsentStatus",
+        "name": "status",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "issuedAt",
+        "type": "uint256"
       }
     ],
     "stateMutability": "view",
@@ -312,6 +348,16 @@ export const CONTRACT_ABI = [
             "internalType": "string",
             "name": "dataFields",
             "type": "string"
+          },
+          {
+            "internalType": "enum ConsentToken.ConsentStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "issuedAt",
+            "type": "uint256"
           }
         ],
         "internalType": "struct ConsentToken.ConsentData[]",
@@ -368,6 +414,16 @@ export const CONTRACT_ABI = [
             "internalType": "string",
             "name": "dataFields",
             "type": "string"
+          },
+          {
+            "internalType": "enum ConsentToken.ConsentStatus",
+            "name": "status",
+            "type": "uint8"
+          },
+          {
+            "internalType": "uint256",
+            "name": "issuedAt",
+            "type": "uint256"
           }
         ],
         "internalType": "struct ConsentToken.ConsentData[]",
@@ -683,7 +739,7 @@ export const CONTRACT_ABI = [
 ];
 
 export const BNB_TESTNET_CHAIN_ID = 97;
-export const BNB_TESTNET_RPC_URL = "https://data-seed-prebsc-1-s1.binance.org:8545/";
+export const BNB_TESTNET_RPC_URL = "https://data-seed-prebsc-2-s3.binance.org:8545/";
 
 export const NETWORK_CONFIG = {
   chainId: `0x${BNB_TESTNET_CHAIN_ID.toString(16)}`,

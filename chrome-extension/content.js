@@ -28,11 +28,11 @@ class ConsentDetector {
     this.init();
   }
   
-  init() {
+    init() {
     // Start monitoring for consent prompts
     this.observeDOM();
     this.scanExistingElements();
-    
+
     // Listen for messages from background script
     chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       if (request.action === 'scanForConsent') {
@@ -42,6 +42,27 @@ class ConsentDetector {
 
     // --- Login detection logic (option B) ---
     this.monitorLoginRequests();
+    
+    // Periodic login status check (every 10 seconds for first 2 minutes, then every 30 seconds)
+    let checkCount = 0;
+    const frequentInterval = setInterval(() => {
+      this.checkLoginStatus();
+      checkCount++;
+      if (checkCount >= 12) { // After 2 minutes (12 * 10 seconds)
+        clearInterval(frequentInterval);
+        // Switch to less frequent checks
+        setInterval(() => {
+          this.checkLoginStatus();
+        }, 30000);
+      }
+    }, 10000);
+    
+    // Also check immediately when page becomes visible
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        this.checkLoginStatus();
+      }
+    });
   }
 
   monitorLoginRequests() {
@@ -71,8 +92,24 @@ class ConsentDetector {
   }
 
   checkIfLoginRequest(url, options) {
-    // Heuristic: look for 'login' or 'signin' in the URL
-    if (typeof url === 'string' && /(login|signin|auth|authenticate|session)/i.test(url)) {
+    // Enhanced login detection - check multiple indicators
+    let isLoginRequest = false;
+    
+    // 1. Check URL patterns
+    if (typeof url === 'string') {
+      isLoginRequest = /(login|signin|auth|authenticate|session|oauth|callback)/i.test(url);
+    }
+    
+    // 2. Check request body for login indicators
+    if (options && options.body) {
+      const bodyStr = typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
+      isLoginRequest = isLoginRequest || /(email|username|password|login|signin)/i.test(bodyStr);
+    }
+    
+    // 3. Check if user is likely logged in (cookies, localStorage, etc.)
+    const hasAuthIndicators = this.checkAuthIndicators();
+    
+    if (isLoginRequest || hasAuthIndicators) {
       // Check for a pending consent for this site
       const pendingConsent = this.getPendingConsentForSite();
       if (pendingConsent) {
@@ -85,6 +122,130 @@ class ConsentDetector {
           url: window.location.href
         });
         // Clear the pending consent from localStorage
+        localStorage.removeItem('lastIssuedConsent');
+      }
+    }
+  }
+
+  checkAuthIndicators() {
+    // Comprehensive check for user authentication status
+    try {
+      let authScore = 0;
+      const maxScore = 10;
+      
+      // 1. Check for auth tokens in localStorage (weight: 3)
+      const authKeys = Object.keys(localStorage).filter(key => 
+        /(token|auth|session|user|login|jwt|access)/i.test(key)
+      );
+      if (authKeys.length > 0) {
+        authScore += 3;
+        console.log('🔐 Found auth keys:', authKeys);
+      }
+      
+      // 2. Check for auth cookies (weight: 2)
+      const authCookies = document.cookie.split(';').some(cookie => 
+        /(token|auth|session|user|login|jwt|access)/i.test(cookie)
+      );
+      if (authCookies) {
+        authScore += 2;
+        console.log('🍪 Found auth cookies');
+      }
+      
+      // 3. Check for user profile elements (weight: 2)
+      const profileSelectors = [
+        '[class*="profile"]', '[class*="user"]', '[class*="account"]', '[class*="avatar"]',
+        '[id*="profile"]', '[id*="user"]', '[id*="account"]', '[id*="avatar"]',
+        '[data-testid*="profile"]', '[data-testid*="user"]', '[data-testid*="account"]'
+      ];
+      const profileElements = document.querySelectorAll(profileSelectors.join(','));
+      if (profileElements.length > 0) {
+        authScore += 2;
+        console.log('👤 Found profile elements:', profileElements.length);
+      }
+      
+      // 4. Check for logout buttons (weight: 3)
+      const logoutSelectors = [
+        'button', 'a', '[role="button"]', '[type="button"]', '[type="submit"]'
+      ];
+      const logoutElements = document.querySelectorAll(logoutSelectors.join(','));
+      const hasLogoutButton = Array.from(logoutElements).some(el => {
+        const text = (el.textContent || '').toLowerCase();
+        return /(logout|signout|sign out|log out|sign off|log off)/i.test(text);
+      });
+      if (hasLogoutButton) {
+        authScore += 3;
+        console.log('🚪 Found logout button');
+      }
+      
+      // 5. Check for user-specific content (weight: 2)
+      const userContentSelectors = [
+        '[class*="welcome"]', '[class*="dashboard"]', '[class*="my"]',
+        '[id*="welcome"]', '[id*="dashboard"]', '[id*="my"]'
+      ];
+      const userContentElements = document.querySelectorAll(userContentSelectors.join(','));
+      if (userContentElements.length > 0) {
+        authScore += 1;
+        console.log('📊 Found user content elements');
+      }
+      
+      // 6. Check for absence of login/signup buttons (weight: 1)
+      const loginSelectors = [
+        'button', 'a', '[role="button"]', '[type="button"]', '[type="submit"]'
+      ];
+      const loginElements = document.querySelectorAll(loginSelectors.join(','));
+      const hasLoginButton = Array.from(loginElements).some(el => {
+        const text = (el.textContent || '').toLowerCase();
+        return /(login|signin|sign in|sign up|register|join)/i.test(text);
+      });
+      if (!hasLoginButton) {
+        authScore += 1;
+        console.log('✅ No login buttons found (user likely logged in)');
+      }
+      
+      // 7. Check for user email/name display (weight: 2)
+      const emailPattern = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/;
+      const pageText = document.body.textContent || '';
+      const hasEmail = emailPattern.test(pageText);
+      if (hasEmail) {
+        authScore += 1;
+        console.log('📧 Found email address on page');
+      }
+      
+      // 8. Check for personalized content (weight: 1)
+      const personalizedSelectors = [
+        '[class*="personal"]', '[class*="custom"]', '[class*="preference"]',
+        '[id*="personal"]', '[id*="custom"]', '[id*="preference"]'
+      ];
+      const personalizedElements = document.querySelectorAll(personalizedSelectors.join(','));
+      if (personalizedElements.length > 0) {
+        authScore += 1;
+        console.log('🎯 Found personalized content');
+      }
+      
+      console.log(`🔍 Auth detection score: ${authScore}/${maxScore}`);
+      
+      // User is considered logged in if score is 4 or higher
+      return authScore >= 4;
+      
+    } catch (e) {
+      console.error('Error checking auth indicators:', e);
+      return false;
+    }
+  }
+
+  checkLoginStatus() {
+    // Periodic check for login status to activate pending consents
+    const pendingConsent = this.getPendingConsentForSite();
+    if (pendingConsent) {
+      const hasAuthIndicators = this.checkAuthIndicators();
+      if (hasAuthIndicators) {
+        console.log('🔑 Periodic check: Login detected, activating pending consent:', pendingConsent);
+        chrome.runtime.sendMessage({
+          action: 'activateConsent',
+          tokenId: pendingConsent.tokenId,
+          site: window.location.hostname,
+          url: window.location.href
+        });
         localStorage.removeItem('lastIssuedConsent');
       }
     }
