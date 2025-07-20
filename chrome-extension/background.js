@@ -67,18 +67,7 @@ class ConsentWalletBackground {
         await this.scheduleExpiryReminder(request.data);
         break;
       case 'activateConsent':
-        // Inject a script into the page to call window.activateConsentByTokenId(tokenId)
-        if (sender.tab && sender.tab.id && request.tokenId) {
-          chrome.scripting.executeScript({
-            target: { tabId: sender.tab.id },
-            func: (tokenId) => {
-              if (window.activateConsentByTokenId) {
-                window.activateConsentByTokenId(tokenId);
-              }
-            },
-            args: [request.tokenId]
-          });
-        }
+        await this.handleActivateConsent(request, sender.tab);
         break;
     }
   }
@@ -163,6 +152,47 @@ class ConsentWalletBackground {
     });
   }
   
+  async handleActivateConsent(request, tab) {
+    console.log('🔑 Activating consent from background:', request);
+    
+    // Update local storage
+    const { consentTokens = [] } = await chrome.storage.local.get(['consentTokens']);
+    const updatedTokens = consentTokens.map(token => 
+      token.tokenId === request.tokenId 
+        ? { ...token, status: 'Active', activatedAt: Date.now() }
+        : token
+    );
+    await chrome.storage.local.set({ consentTokens: updatedTokens });
+    
+    // Try to activate on blockchain if Consent Wallet is open
+    try {
+      // Find Consent Wallet tab
+      const tabs = await chrome.tabs.query({ url: '*://localhost:5173/*' });
+      if (tabs.length > 0) {
+        // Inject script to activate consent on blockchain
+        chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          func: (tokenId) => {
+            if (window.activateConsentByTokenId) {
+              window.activateConsentByTokenId(tokenId);
+            }
+          },
+          args: [request.tokenId]
+        });
+      }
+    } catch (error) {
+      console.error('Error activating consent on blockchain:', error);
+    }
+    
+    // Show notification
+    chrome.notifications.create({
+      type: 'basic',
+      iconUrl: 'icons/icon.png',
+      title: 'Consent Activated',
+      message: `Your consent has been activated for ${request.site}`
+    });
+  }
+  
   async scheduleExpiryReminder(consentData) {
     const expiryTime = new Date(consentData.expiryDate).getTime();
     const reminderTime = expiryTime - (24 * 60 * 60 * 1000); // 24 hours before expiry
@@ -184,21 +214,57 @@ class ConsentWalletBackground {
     // Handle 10-minute abandonment
     if (alarm.name.startsWith('abandon_')) {
       const tokenId = alarm.name.replace('abandon_', '');
-      // Only inject into the tab where consent was issued
-      const { abandonTabMap } = await chrome.storage.local.get(['abandonTabMap']);
-      const tabId = abandonTabMap ? abandonTabMap[tokenId] : null;
-      if (tabId) {
-        chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          func: (tokenId) => {
-            if (window.abandonConsentByTokenId) {
-              window.abandonConsentByTokenId(Number(tokenId));
-            }
-          },
-          args: [tokenId]
-        });
-      }
+      await this.handleAbandonConsent(tokenId);
     }
+  }
+  
+  async handleAbandonConsent(tokenId) {
+    console.log('⏰ Abandoning consent due to timeout:', tokenId);
+    
+    // Check if consent is still pending
+    const { consentTokens = [] } = await chrome.storage.local.get(['consentTokens']);
+    const consent = consentTokens.find(t => t.tokenId == tokenId);
+    
+    if (consent && consent.status === 'Pending') {
+      // Update local storage
+      const updatedTokens = consentTokens.map(token => 
+        token.tokenId == tokenId 
+          ? { ...token, status: 'Abandoned', abandonedAt: Date.now() }
+          : token
+      );
+      await chrome.storage.local.set({ consentTokens: updatedTokens });
+      
+      // Try to abandon on blockchain if Consent Wallet is open
+      try {
+        const tabs = await chrome.tabs.query({ url: '*://localhost:5173/*' });
+        if (tabs.length > 0) {
+          chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            func: (tokenId) => {
+              if (window.abandonConsentByTokenId) {
+                window.abandonConsentByTokenId(Number(tokenId));
+              }
+            },
+            args: [tokenId]
+          });
+        }
+      } catch (error) {
+        console.error('Error abandoning consent on blockchain:', error);
+      }
+      
+      // Show notification
+      chrome.notifications.create({
+        type: 'basic',
+        iconUrl: 'icons/icon.png',
+        title: 'Consent Abandoned',
+        message: `Consent was abandoned due to no login activity within 10 minutes`
+      });
+    }
+    
+    // Clean up
+    const { abandonTabMap = {} } = await chrome.storage.local.get(['abandonTabMap']);
+    delete abandonTabMap[tokenId];
+    await chrome.storage.local.set({ abandonTabMap });
   }
   
   async handleExpiryReminder(tokenId) {

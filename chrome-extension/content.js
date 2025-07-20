@@ -72,30 +72,40 @@ class ConsentDetector {
 
   checkIfLoginRequest(url, options) {
     // Heuristic: look for 'login' or 'signin' in the URL
-    if (typeof url === 'string' && /(login|signin)/i.test(url)) {
+    if (typeof url === 'string' && /(login|signin|auth|authenticate|session)/i.test(url)) {
       // Check for a pending consent for this site
       const pendingConsent = this.getPendingConsentForSite();
       if (pendingConsent) {
-        // Send message to background or directly call contract to activate
+        console.log('🔑 Login detected, activating pending consent:', pendingConsent);
+        // Send message to background to activate consent
         chrome.runtime.sendMessage({
           action: 'activateConsent',
           tokenId: pendingConsent.tokenId,
-          site: window.location.hostname
+          site: window.location.hostname,
+          url: window.location.href
         });
+        // Clear the pending consent from localStorage
+        localStorage.removeItem('lastIssuedConsent');
       }
     }
   }
 
   getPendingConsentForSite() {
-    // Example: store last issued consent in localStorage/sessionStorage after issuance
+    // Get last issued consent from localStorage
     try {
       const consentStr = localStorage.getItem('lastIssuedConsent');
       if (!consentStr) return null;
       const consent = JSON.parse(consentStr);
-      if (consent && consent.status === 'Pending' && consent.site === window.location.hostname) {
+      // Check if consent is pending and for current site and within 10 minutes
+      const tenMinutesAgo = Date.now() - (10 * 60 * 1000);
+      if (consent && 
+          consent.status === 'Pending' && 
+          consent.site === window.location.hostname &&
+          consent.timestamp > tenMinutesAgo) {
         return consent;
       }
     } catch (e) {}
+      console.error('Error getting pending consent:', e);
     return null;
   }
   

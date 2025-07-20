@@ -99,14 +99,20 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         localStorage.setItem('lastIssuedConsent', JSON.stringify({
           tokenId,
           status: 'Pending',
-          site: window.location.hostname
+          site: window.location.hostname,
+          timestamp: Date.now()
         }));
       }
-      // Schedule a 10-minute timer for activation (handled by extension or backend)
-      if (tokenId) {
-        // You can call a callback or trigger a message to the extension here
-        // e.g., window.postMessage({ type: 'ConsentPending', tokenId, ... })
-      }
+      
+      // Notify extension about consent issuance
+      window.postMessage({ 
+        type: 'ConsentIssued', 
+        tokenId, 
+        status: 'Pending',
+        site: window.location.hostname,
+        timestamp: Date.now()
+      }, '*');
+      
       await fetchConsents(); // Refresh consents after minting
     } catch (error) {
       console.error('Error minting consent:', error);
@@ -142,11 +148,20 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
 
   const activateConsent = async (tokenId: number) => {
     if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
+    if (contractError) throw new Error(`Contract error: ${contractError}`);
+    if (!isCorrectNetwork) throw new Error('Please switch to BNB Smart Chain Testnet to perform this action.');
+    
     setLoading(true);
     try {
+      console.log('🔄 Activating consent token:', tokenId);
       const tx = await contract.activateConsent(tokenId);
+      console.log('📝 Transaction sent:', tx.hash);
       await tx.wait();
+      console.log('✅ Transaction confirmed');
       await fetchConsents();
+    } catch (error) {
+      console.error('Error activating consent:', error);
+      throw error;
     } finally {
       setLoading(false);
     }
@@ -154,11 +169,20 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
 
   const abandonConsent = async (tokenId: number) => {
     if (!contract) throw new Error('Contract not initialized. Please check your contract configuration.');
+    if (contractError) throw new Error(`Contract error: ${contractError}`);
+    if (!isCorrectNetwork) throw new Error('Please switch to BNB Smart Chain Testnet to perform this action.');
+    
     setLoading(true);
     try {
+      console.log('🔄 Abandoning consent token:', tokenId);
       const tx = await contract.abandonConsent(tokenId);
+      console.log('📝 Transaction sent:', tx.hash);
       await tx.wait();
+      console.log('✅ Transaction confirmed');
       await fetchConsents();
+    } catch (error) {
+      console.error('Error abandoning consent:', error);
+      throw error;
     } finally {
       setLoading(false);
     }

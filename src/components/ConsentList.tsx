@@ -27,21 +27,30 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
 
   const getStatus = (consent: ConsentToken) => {
     if (consent.isRevoked) return 'revoked';
-    if (consent.status) return consent.status.toLowerCase(); // 'pending', 'active', 'abandoned'
+    if (consent.status) {
+      const status = consent.status.toLowerCase();
+      if (status === 'pending') return 'pending';
+      if (status === 'active') return 'active';
+      if (status === 'abandoned') return 'abandoned';
+    }
     if (consent.expiryDate * 1000 < Date.now()) return 'expired';
-    return 'unknown';
+    return 'active'; // Default for older tokens without status
   };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'active':
         return <CheckCircle className="h-5 w-5 text-orange-400" />;
+      case 'pending':
+        return <Clock className="h-5 w-5 text-blue-400" />;
+      case 'abandoned':
+        return <X className="h-5 w-5 text-gray-400" />;
       case 'expired':
         return <Clock className="h-5 w-5 text-yellow-400" />;
       case 'revoked':
         return <X className="h-5 w-5 text-red-400" />;
       default:
-        return <AlertTriangle className="h-5 w-5 text-gray-400" />;
+        return <CheckCircle className="h-5 w-5 text-orange-400" />;
     }
   };
 
@@ -49,12 +58,16 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
     switch (status) {
       case 'active':
         return 'text-orange-400 bg-orange-400 bg-opacity-20';
+      case 'pending':
+        return 'text-blue-400 bg-blue-400 bg-opacity-20';
+      case 'abandoned':
+        return 'text-gray-400 bg-gray-400 bg-opacity-20';
       case 'expired':
         return 'text-yellow-400 bg-yellow-400 bg-opacity-20';
       case 'revoked':
         return 'text-red-400 bg-red-400 bg-opacity-20';
       default:
-        return 'text-gray-400 bg-gray-400 bg-opacity-20';
+        return 'text-orange-400 bg-orange-400 bg-opacity-20';
     }
   };
 
@@ -236,7 +249,7 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                 </div>
               </div>
 
-              {status === 'active' && (
+              {(status === 'active' || status === 'pending') && (
                 <button
                   type="button"
                   onClick={() => handleRevoke(consent.tokenId)}
@@ -257,7 +270,7 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
                           ? 'Switch Network' 
                           : contractError 
                           ? 'Contract Error' 
-                          : 'Revoke Consent'
+                          : status === 'pending' ? 'Cancel Consent' : 'Revoke Consent'
                         }
                       </span>
                     </>
