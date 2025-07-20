@@ -233,7 +233,9 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         isRevoked: consent.isRevoked,
         website: consent.website || '',
         dataFields: consent.dataFields || '',
-        status: consent.status === 0 ? 'Pending' : consent.status === 1 ? 'Active' : 'Abandoned',
+        status: consent.status !== undefined ? 
+          (consent.status === 0 ? 'Pending' : consent.status === 1 ? 'Active' : 'Abandoned') : 
+          undefined,
         issuedAt: Number(consent.issuedAt)
       }));
       

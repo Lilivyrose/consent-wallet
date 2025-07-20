@@ -27,14 +27,15 @@ export const ConsentList: React.FC<ConsentListProps> = ({ consents, onRevoke, on
 
   const getStatus = (consent: ConsentToken) => {
     if (consent.isRevoked) return 'revoked';
-    if (consent.status) {
-      const status = consent.status.toLowerCase();
-      if (status === 'pending') return 'pending';
-      if (status === 'active') return 'active';
-      if (status === 'abandoned') return 'abandoned';
-    }
+    
+    // Check contract status first (this is the source of truth)
+    if (consent.status === 'Pending') return 'pending';
+    if (consent.status === 'Active') return 'active';
+    if (consent.status === 'Abandoned') return 'abandoned';
+    
+    // Fallback for older tokens without status
     if (consent.expiryDate * 1000 < Date.now()) return 'expired';
-    return 'active'; // Default for older tokens without status
+    return 'active';
   };
 
   const getStatusIcon = (status: string) => {
