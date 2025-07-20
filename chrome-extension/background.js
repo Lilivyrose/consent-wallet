@@ -41,9 +41,13 @@ class ConsentWalletBackground {
         break;
         
       case 'consentIssued':
-        await this.handleConsentIssued(request.data);
+        await this.handleConsentIssued(request.data, sender.tab);
         // Schedule 10-minute abandonment alarm
-        if (request.data && request.data.tokenId) {
+        if (request.data && request.data.tokenId && sender.tab && sender.tab.id) {
+          // Store tabId for this tokenId
+          const tabMap = (await chrome.storage.local.get(['abandonTabMap'])).abandonTabMap || {};
+          tabMap[request.data.tokenId] = sender.tab.id;
+          await chrome.storage.local.set({ abandonTabMap: tabMap });
           chrome.alarms.create(`abandon_${request.data.tokenId}`, {
             delayInMinutes: 10
           });
@@ -108,15 +112,16 @@ class ConsentWalletBackground {
     }
   }
   
-  async handleConsentIssued(consentData) {
+  async handleConsentIssued(consentData, tab) {
     console.log('✅ Consent issued:', consentData);
     
     // Store consent token
     const { consentTokens = [] } = await chrome.storage.local.get(['consentTokens']);
     consentTokens.push({
       ...consentData,
-      status: 'active',
-      issuedAt: Date.now()
+      status: 'Pending',
+      issuedAt: Date.now(),
+      tabId: tab?.id || null // Store the tabId where consent was issued
     });
     await chrome.storage.local.set({ consentTokens });
     
@@ -179,22 +184,20 @@ class ConsentWalletBackground {
     // Handle 10-minute abandonment
     if (alarm.name.startsWith('abandon_')) {
       const tokenId = alarm.name.replace('abandon_', '');
-      // Check if consent is still pending (optional: fetch from contract or local storage)
-      // Inject a script to call window.abandonConsentByTokenId(tokenId)
-      // Find all tabs for the site, or just use the last known tab
-      chrome.tabs.query({}, (tabs) => {
-        for (const tab of tabs) {
-          chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            func: (tokenId) => {
-              if (window.abandonConsentByTokenId) {
-                window.abandonConsentByTokenId(Number(tokenId));
-              }
-            },
-            args: [tokenId]
-          });
-        }
-      });
+      // Only inject into the tab where consent was issued
+      const { abandonTabMap } = await chrome.storage.local.get(['abandonTabMap']);
+      const tabId = abandonTabMap ? abandonTabMap[tokenId] : null;
+      if (tabId) {
+        chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          func: (tokenId) => {
+            if (window.abandonConsentByTokenId) {
+              window.abandonConsentByTokenId(Number(tokenId));
+            }
+          },
+          args: [tokenId]
+        });
+      }
     }
   }
   
