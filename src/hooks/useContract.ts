@@ -85,7 +85,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         for (const log of receipt.logs) {
           try {
             const event = contract.interface.parseLog(log);
-            if (event.name === 'ConsentIssued') {
+            if (event.name === 'ConsentMinted') {
               tokenId = Number(event.args.tokenId);
               break;
             }
@@ -234,7 +234,7 @@ export const useContract = (provider: ethers.BrowserProvider | null, account: st
         website: consent.website || '',
         dataFields: consent.dataFields || '',
         status: consent.status !== undefined ? 
-          (consent.status === 0 ? 'Pending' : consent.status === 1 ? 'Active' : 'Abandoned') : 
+          (Number(consent.status) === 0 ? 'Pending' : Number(consent.status) === 1 ? 'Active' : 'Abandoned') : 
           undefined,
         issuedAt: Number(consent.issuedAt)
       }));
