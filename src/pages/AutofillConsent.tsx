@@ -6,12 +6,23 @@ import { useWallet } from '../contexts/WalletContext';
 import { assessPrivacyRisk, DataCollectionRequest } from '../utils/privacyRiskAssessment';
 import { PrivacyRiskIndicator } from '../components/PrivacyRiskIndicator';
 
+// Define proper types for form data
+interface FormData {
+  recipient: string;
+  purpose: string;
+  fields: string[];
+  expiryDate: string;
+  privacyUrl: string;
+  sourceUrl: string;
+  siteName: string;
+}
+
 export default function ShareData() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { account, isConnected } = useWallet();
+  const { wallet } = useWallet();
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     recipient: '',
     purpose: '',
     fields: [],
@@ -49,7 +60,7 @@ export default function ShareData() {
     const fields = searchParams.get('fields');
     const privacyUrl = searchParams.get('privacyUrl');
     const sourceUrl = searchParams.get('sourceUrl');
-    const expiryDate = searchParams.get('expiryDate'); // If you want to support expiry autofill
+    const expiryDate = searchParams.get('expiryDate');
 
     const parsedFields = fields
       ? fields.split(',').map(field => field.trim()).filter(Boolean)
@@ -63,15 +74,15 @@ export default function ShareData() {
       privacyUrl: privacyUrl || '',
       sourceUrl: sourceUrl || '',
       siteName: site || serviceName || '',
-      expiryDate: expiryDate || '', // Only autofills if present in URL
+      expiryDate: expiryDate || '',
     }));
   }, [searchParams]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('handleSubmit called. formData:', formData);
     
-    if (!isConnected) {
+    if (!wallet.isConnected) {
       setError('Please connect your wallet first');
       return;
     }
@@ -119,7 +130,7 @@ export default function ShareData() {
     { id: 'personal information', label: 'Personal Information', icon: FileText },
   ];
 
-  const toggleField = (fieldId) => {
+  const toggleField = (fieldId: string) => {
     setFormData(prev => ({
       ...prev,
       fields: prev.fields.includes(fieldId)
