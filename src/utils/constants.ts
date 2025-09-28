@@ -739,7 +739,7 @@ export const CONTRACT_ABI = [
 ];
 
 export const BNB_TESTNET_CHAIN_ID = 97;
-export const BNB_TESTNET_RPC_URL = "https://data-seed-prebsc-2-s3.binance.org:8545/";
+export const BNB_TESTNET_RPC_URL = "https://bsc-testnet.public.blastapi.io";
 
 export const NETWORK_CONFIG = {
   chainId: `0x${BNB_TESTNET_CHAIN_ID.toString(16)}`,
